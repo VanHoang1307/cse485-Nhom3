@@ -1,0 +1,168 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ScholarshipProgram;
+use Illuminate\Http\Request;
+
+class ScholarshipProgramController extends Controller
+{
+    /**
+     * Hiển thị danh sách học bổng
+     */
+    public function index()
+    {
+        $scholarships = ScholarshipProgram::latest()->get();
+
+        return view('scholarships.index', compact('scholarships'));
+    }
+
+
+    /**
+     * Hiển thị form thêm mới
+     */
+    public function create()
+    {
+        return view('scholarships.create');
+    }
+
+
+    /**
+     * Lưu học bổng mới
+     */
+    public function store(Request $request)
+    {
+        $data = $this->validateData($request);
+
+
+        ScholarshipProgram::create($data);
+
+
+        return redirect()
+            ->route('scholarships.index')
+            ->with('success', 'Thêm chương trình học bổng thành công');
+    }
+
+
+    /**
+     * Xem chi tiết học bổng
+     */
+    public function show(string $id)
+    {
+        $scholarship = ScholarshipProgram::with('eligibilityRules')
+            ->findOrFail($id);
+
+
+        return view('scholarships.show', compact('scholarship'));
+    }
+
+
+    /**
+     * Hiển thị form chỉnh sửa
+     */
+    public function edit(string $id)
+    {
+        $scholarship = ScholarshipProgram::findOrFail($id);
+
+
+        return view('scholarships.edit', compact('scholarship'));
+    }
+
+
+    /**
+     * Cập nhật học bổng
+     */
+    public function update(Request $request, string $id)
+    {
+        $data = $this->validateData($request);
+
+
+        $scholarship = ScholarshipProgram::findOrFail($id);
+
+
+        $scholarship->update($data);
+
+
+        return redirect()
+            ->route('scholarships.index')
+            ->with('success', 'Cập nhật chương trình học bổng thành công');
+    }
+
+
+    /**
+     * Xóa học bổng
+     */
+    public function destroy(string $id)
+    {
+        $scholarship = ScholarshipProgram::findOrFail($id);
+
+
+        $scholarship->delete();
+
+
+        return redirect()
+            ->route('scholarships.index')
+            ->with('success', 'Xóa chương trình học bổng thành công');
+    }
+
+
+    /**
+     * Validate dữ liệu
+     */
+    private function validateData(Request $request)
+    {
+        return $request->validate([
+
+            'name' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+
+
+            'description' => [
+                'nullable',
+                'string'
+            ],
+
+
+            'amount' => [
+                'required',
+                'numeric'
+            ],
+
+
+            'academic_year' => [
+                'required',
+                'integer'
+            ],
+
+
+            'semester' => [
+                'required',
+                'integer',
+                'between:1,2'
+            ],
+
+
+            'start_date' => [
+                'required',
+                'date'
+            ],
+
+
+            'end_date' => [
+                'required',
+                'date',
+                'after_or_equal:start_date'
+            ],
+
+
+            'status' => [
+                'required',
+                'in:active,inactive'
+            ],
+
+        ]);
+    }
+}
