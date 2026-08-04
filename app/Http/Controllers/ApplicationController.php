@@ -44,4 +44,43 @@ class ApplicationController extends Controller
             ->route('applications.index')
             ->with('success', 'Thêm hồ sơ thành công!');
     }
+    // Form sửa
+    public function edit(Application $application)
+    {
+        $students = Student::orderBy('full_name')->get();
+
+        return view(
+            'applications.edit',
+            compact('application', 'students')
+        );
+    }
+
+    // Cập nhật
+    public function update(Request $request, Application $application)
+    {
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'scholarship_program_id' => 'required|integer',
+            'application_code' => 'required|unique:applications,application_code,' . $application->id,
+            'apply_date' => 'required|date',
+            'status' => 'required',
+            'review_note' => 'nullable'
+        ]);
+
+        $application->update($request->all());
+
+        return redirect()
+            ->route('applications.index')
+            ->with('success', 'Cập nhật thành công!');
+    }
+
+    // Xóa
+    public function destroy(Application $application)
+    {
+        $application->delete();
+
+        return redirect()
+            ->route('applications.index')
+            ->with('success', 'Xóa thành công!');
+    }
 }

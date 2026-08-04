@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm hồ sơ học bổng</title>
+    <title>Cập nhật hồ sơ học bổng</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -13,9 +13,9 @@
 
     <div class="card shadow">
 
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-warning">
 
-            <h3>Thêm hồ sơ xét học bổng</h3>
+            <h3>Cập nhật hồ sơ xét học bổng</h3>
 
         </div>
 
@@ -42,9 +42,11 @@
 
             @endif
 
-            <form action="{{ route('applications.store') }}" method="POST">
+            <form action="{{ route('applications.update',$application->id) }}" method="POST">
 
                 @csrf
+
+                @method('PUT')
 
                 <div class="row">
 
@@ -52,9 +54,7 @@
                     <div class="col-md-6 mb-3">
 
                         <label class="form-label">
-
                             Sinh viên
-
                         </label>
 
                         <select
@@ -62,17 +62,11 @@
                             class="form-select"
                             required>
 
-                            <option value="">
-
-                                -- Chọn sinh viên --
-
-                            </option>
-
                             @foreach($students as $student)
 
                                 <option
                                     value="{{ $student->id }}"
-                                    {{ old('student_id')==$student->id ? 'selected':'' }}>
+                                    {{ old('student_id',$application->student_id)==$student->id ? 'selected' : '' }}>
 
                                     {{ $student->student_code }}
                                     -
@@ -99,7 +93,7 @@
                             type="number"
                             name="scholarship_program_id"
                             class="form-control"
-                            value="{{ old('scholarship_program_id') }}"
+                            value="{{ old('scholarship_program_id',$application->scholarship_program_id) }}"
                             required>
 
                     </div>
@@ -117,8 +111,7 @@
                             type="text"
                             name="application_code"
                             class="form-control"
-                            value="{{ old('application_code') }}"
-                            placeholder="VD: HS001"
+                            value="{{ old('application_code',$application->application_code) }}"
                             required>
 
                     </div>
@@ -136,7 +129,7 @@
                             type="date"
                             name="apply_date"
                             class="form-control"
-                            value="{{ old('apply_date') }}"
+                            value="{{ old('apply_date',$application->apply_date) }}"
                             required>
 
                     </div>
@@ -156,7 +149,7 @@
 
                             <option
                                 value="Pending"
-                                {{ old('status')=='Pending'?'selected':'' }}>
+                                {{ old('status',$application->status)=='Pending' ? 'selected' : '' }}>
 
                                 Pending
 
@@ -164,7 +157,7 @@
 
                             <option
                                 value="Approved"
-                                {{ old('status')=='Approved'?'selected':'' }}>
+                                {{ old('status',$application->status)=='Approved' ? 'selected' : '' }}>
 
                                 Approved
 
@@ -172,7 +165,7 @@
 
                             <option
                                 value="Rejected"
-                                {{ old('status')=='Rejected'?'selected':'' }}>
+                                {{ old('status',$application->status)=='Rejected' ? 'selected' : '' }}>
 
                                 Rejected
 
@@ -193,8 +186,8 @@
 
                         <textarea
                             name="review_note"
-                            class="form-control"
-                            rows="3">{{ old('review_note') }}</textarea>
+                            rows="3"
+                            class="form-control">{{ old('review_note',$application->review_note) }}</textarea>
 
                     </div>
 
@@ -204,9 +197,9 @@
 
                 <button
                     type="submit"
-                    class="btn btn-success">
+                    class="btn btn-warning">
 
-                    Lưu hồ sơ
+                    Cập nhật
 
                 </button>
 

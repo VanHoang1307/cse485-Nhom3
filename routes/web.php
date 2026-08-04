@@ -20,14 +20,22 @@ Route::get('/test', function () {
 
 });
 
-Route::resource('students', StudentController::class)->only([
-    'index',
-    'create',
-    'store'
-]);
+Route::resource('students', StudentController::class)
+    ->only([
+        'index',
+        'create',
+        'store',
+        'edit',
+        'update',
+        'destroy'
+    ]);
 
-Route::resource('applications', ApplicationController::class)->only([
-    'index',
-    'create',
-    'store'
-]);
+Route::resource('applications', ApplicationController::class)
+    ->only([
+        'index',
+        'create',
+        'store',
+        'edit',
+        'update',
+        'destroy'
+    ]);

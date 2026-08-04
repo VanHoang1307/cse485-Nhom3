@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh sách sinh viên</title>
 
-    <!-- Bootstrap 5 -->
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
 <body>
 
@@ -21,7 +20,7 @@
         </a>
     </div>
 
-    {{-- Thông báo thành công --}}
+    {{-- Thông báo --}}
     @if(session('success'))
 
         <div class="alert alert-success alert-dismissible fade show">
@@ -38,17 +37,15 @@
 
     @endif
 
-    <div class="card">
+    <div class="card shadow">
 
         <div class="card-header bg-primary text-white">
-
-            Danh sách sinh viên
-
+            Quản lý sinh viên
         </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover table-striped">
+            <table class="table table-bordered table-hover table-striped align-middle">
 
                 <thead class="table-dark">
 
@@ -74,9 +71,11 @@
 
                     <th>GPA</th>
 
-                    <th>Điểm rèn luyện</th>
+                    <th>Điểm RL</th>
 
                     <th>Trạng thái</th>
+
+                    <th width="180">Thao tác</th>
 
                 </tr>
 
@@ -115,20 +114,46 @@
                             @if($student->status == 'Active')
 
                                 <span class="badge bg-success">
-
                                     Active
-
                                 </span>
 
                             @else
 
                                 <span class="badge bg-secondary">
-
                                     {{ $student->status }}
-
                                 </span>
 
                             @endif
+
+                        </td>
+
+                        <td>
+
+                            <a href="{{ route('students.edit',$student->id) }}"
+                               class="btn btn-warning btn-sm">
+
+                                Sửa
+
+                            </a>
+
+                            <form action="{{ route('students.destroy',$student->id) }}"
+                                  method="POST"
+                                  style="display:inline;">
+
+                                @csrf
+
+                                @method('DELETE')
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Bạn có chắc chắn muốn xóa sinh viên này?')">
+
+                                    Xóa
+
+                                </button>
+
+                            </form>
 
                         </td>
 
@@ -138,7 +163,7 @@
 
                     <tr>
 
-                        <td colspan="12" class="text-center text-danger">
+                        <td colspan="13" class="text-center text-danger">
 
                             Chưa có dữ liệu sinh viên.
 

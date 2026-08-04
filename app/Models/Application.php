@@ -24,7 +24,7 @@ class Application extends Model
     {
         return $this->hasMany(ApplicationDocument::class);
     }
-    public function scores()
+        public function scores()
     {
         return $this->hasMany(EvaluationScore::class);
     }
@@ -34,6 +34,6 @@ class Application extends Model
     }
     public function scholarshipProgram()
     {
-        return $this->belongsTo(ScholarshipProgram::class);
+    return $this->belongsTo(ScholarshipProgram::class);
     }
 }
