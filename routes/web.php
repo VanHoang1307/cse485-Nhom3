@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Models\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ApplicationController;
@@ -7,7 +9,6 @@ use App\Http\Controllers\ApplicationController;
 Route::get('/', function () {
     return view('welcome');
 });
-use App\Models\Application;
 
 Route::get('/test', function () {
 

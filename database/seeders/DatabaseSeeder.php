@@ -12,6 +12,7 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
     use WithoutModelEvents;
 
 =======
@@ -19,6 +20,8 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+=======
+>>>>>>> c63bd8db062e2b0a26835be02a104358fb4812dd
     public function run(): void
     {
         $this->call([

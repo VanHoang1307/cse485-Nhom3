@@ -10,13 +10,24 @@ class ScholarshipProgramController extends Controller
     /**
      * Hiển thị danh sách học bổng
      */
-    public function index()
+    public function index(Request $request)
     {
-        $scholarships = ScholarshipProgram::latest()->get();
+        $keyword = $request->keyword;
 
-        return view('scholarships.index', compact('scholarships'));
+        $scholarships = ScholarshipProgram::when($keyword, function ($query) use ($keyword) {
+
+                $query->where('name', 'like', '%' . $keyword . '%');
+
+            })
+            ->latest()
+            ->paginate(5)
+            ->withQueryString();
+
+        return view('scholarships.index', compact(
+            'scholarships',
+            'keyword'
+        ));
     }
-
 
     /**
      * Hiển thị form thêm mới
@@ -26,7 +37,6 @@ class ScholarshipProgramController extends Controller
         return view('scholarships.create');
     }
 
-
     /**
      * Lưu học bổng mới
      */
@@ -34,28 +44,23 @@ class ScholarshipProgramController extends Controller
     {
         $data = $this->validateData($request);
 
-
         ScholarshipProgram::create($data);
-
 
         return redirect()
             ->route('scholarships.index')
-            ->with('success', 'Thêm chương trình học bổng thành công');
+            ->with('success', 'Thêm chương trình học bổng thành công.');
     }
 
-
     /**
-     * Xem chi tiết học bổng
+     * Hiển thị chi tiết học bổng
      */
     public function show(string $id)
     {
         $scholarship = ScholarshipProgram::with('eligibilityRules')
             ->findOrFail($id);
 
-
         return view('scholarships.show', compact('scholarship'));
     }
-
 
     /**
      * Hiển thị form chỉnh sửa
@@ -64,10 +69,8 @@ class ScholarshipProgramController extends Controller
     {
         $scholarship = ScholarshipProgram::findOrFail($id);
 
-
         return view('scholarships.edit', compact('scholarship'));
     }
-
 
     /**
      * Cập nhật học bổng
@@ -76,18 +79,14 @@ class ScholarshipProgramController extends Controller
     {
         $data = $this->validateData($request);
 
-
         $scholarship = ScholarshipProgram::findOrFail($id);
-
 
         $scholarship->update($data);
 
-
         return redirect()
             ->route('scholarships.index')
-            ->with('success', 'Cập nhật chương trình học bổng thành công');
+            ->with('success', 'Cập nhật chương trình học bổng thành công.');
     }
-
 
     /**
      * Xóa học bổng
@@ -96,15 +95,12 @@ class ScholarshipProgramController extends Controller
     {
         $scholarship = ScholarshipProgram::findOrFail($id);
 
-
         $scholarship->delete();
-
 
         return redirect()
             ->route('scholarships.index')
-            ->with('success', 'Xóa chương trình học bổng thành công');
+            ->with('success', 'Xóa chương trình học bổng thành công.');
     }
-
 
     /**
      * Validate dữ liệu
@@ -119,24 +115,22 @@ class ScholarshipProgramController extends Controller
                 'max:255'
             ],
 
-
             'description' => [
                 'nullable',
                 'string'
             ],
 
-
             'amount' => [
                 'required',
-                'numeric'
+                'numeric',
+                'min:0'
             ],
-
 
             'academic_year' => [
                 'required',
-                'integer'
+                'string',
+                'max:20'
             ],
-
 
             'semester' => [
                 'required',
@@ -144,12 +138,10 @@ class ScholarshipProgramController extends Controller
                 'between:1,2'
             ],
 
-
             'start_date' => [
                 'required',
                 'date'
             ],
-
 
             'end_date' => [
                 'required',
@@ -157,10 +149,9 @@ class ScholarshipProgramController extends Controller
                 'after_or_equal:start_date'
             ],
 
-
             'status' => [
                 'required',
-                'in:active,inactive'
+                'in:draft,active,closed'
             ],
 
         ]);
