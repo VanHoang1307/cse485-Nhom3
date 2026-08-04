@@ -1,183 +1,187 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.app')
 
-<head>
-    <title>Thêm điều kiện học bổng</title>
-</head>
+@section('title', 'Thêm điều kiện xét học bổng')
 
+@section('content')
 
-<body>
+<div class="card shadow">
 
+    <div class="card-header bg-primary text-white">
 
-<h1>
-    Thêm điều kiện xét học bổng
-</h1>
+        <h3 class="mb-0">
 
+            Thêm điều kiện xét học bổng
 
-<a href="{{ route('eligibility-rules.index') }}">
-    ← Quay lại danh sách
-</a>
+        </h3>
 
+    </div>
 
-<br><br>
+    <div class="card-body">
 
+        <a href="{{ route('eligibility-rules.index') }}"
+           class="btn btn-secondary mb-3">
 
+            ← Quay lại danh sách
 
-@if($errors->any())
+        </a>
 
-<div style="color:red">
+        @if($errors->any())
 
-<ul>
+            <div class="alert alert-danger">
 
-@foreach($errors->all() as $error)
+                <ul class="mb-0">
 
-<li>
-    {{ $error }}
-</li>
+                    @foreach($errors->all() as $error)
 
-@endforeach
+                        <li>{{ $error }}</li>
 
-</ul>
+                    @endforeach
+
+                </ul>
+
+            </div>
+
+        @endif
+
+        <form action="{{ route('eligibility-rules.store') }}"
+              method="POST">
+
+            @csrf
+
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Chương trình học bổng
+
+                </label>
+
+                <select
+                    name="scholarship_program_id"
+                    class="form-select">
+
+                    <option value="">
+
+                        -- Chọn chương trình học bổng --
+
+                    </option>
+
+                    @foreach($scholarships as $scholarship)
+
+                        <option
+                            value="{{ $scholarship->id }}"
+                            {{ old('scholarship_program_id') == $scholarship->id ? 'selected' : '' }}>
+
+                            {{ $scholarship->name }}
+
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    GPA tối thiểu
+
+                </label>
+
+                <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="4"
+                    name="min_gpa"
+                    class="form-control"
+                    value="{{ old('min_gpa') }}">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Tín chỉ tối thiểu
+
+                </label>
+
+                <input
+                    type="number"
+                    min="1"
+                    name="min_credits"
+                    class="form-control"
+                    value="{{ old('min_credits') }}">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Cho phép nợ môn
+
+                </label>
+
+                <select
+                    name="allow_debt_subject"
+                    class="form-select">
+
+                    <option value="1"
+                        {{ old('allow_debt_subject') == '1' ? 'selected' : '' }}>
+
+                        Có
+
+                    </option>
+
+                    <option value="0"
+                        {{ old('allow_debt_subject') == '0' ? 'selected' : '' }}>
+
+                        Không
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+
+                    Ghi chú
+
+                </label>
+
+                <textarea
+                    name="note"
+                    rows="4"
+                    class="form-control">{{ old('note') }}</textarea>
+
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-success">
+
+                Lưu điều kiện
+
+            </button>
+
+            <a href="{{ route('eligibility-rules.index') }}"
+               class="btn btn-secondary">
+
+                Hủy
+
+            </a>
+
+        </form>
+
+    </div>
 
 </div>
 
-@endif
-
-
-
-
-<form 
-action="{{ route('eligibility-rules.store') }}"
-method="POST"
->
-
-
-@csrf
-
-
-
-<label>
-    Chương trình học bổng:
-</label>
-
-<br>
-
-
-<select name="scholarship_program_id">
-
-
-@foreach($scholarships as $scholarship)
-
-
-<option value="{{ $scholarship->id }}">
-
-    {{ $scholarship->name }}
-
-</option>
-
-
-@endforeach
-
-
-</select>
-
-
-
-<br><br>
-
-
-
-<label>
-    GPA tối thiểu:
-</label>
-
-<br>
-
-
-<input 
-type="number"
-step="0.01"
-name="min_gpa"
-value="{{ old('min_gpa') }}"
->
-
-
-<br><br>
-
-
-
-<label>
-    Tín chỉ tối thiểu:
-</label>
-
-<br>
-
-
-<input 
-type="number"
-name="min_credits"
-value="{{ old('min_credits') }}"
->
-
-
-
-<br><br>
-
-
-
-<label>
-    Cho phép nợ môn:
-</label>
-
-<br>
-
-
-<select name="allow_debt_subject">
-
-
-<option value="0">
-    Không
-</option>
-
-
-<option value="1">
-    Có
-</option>
-
-
-</select>
-
-
-
-<br><br>
-
-
-
-<label>
-    Ghi chú:
-</label>
-
-<br>
-
-
-<textarea name="note">{{ old('note') }}</textarea>
-
-
-
-<br><br>
-
-
-
-<button type="submit">
-    Lưu điều kiện
-</button>
-
-
-
-</form>
-
-
-
-</body>
-
-</html>
+@endsection

@@ -1,174 +1,171 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.app')
 
-<head>
-    <title>Danh sách điều kiện học bổng</title>
-</head>
+@section('title', 'Danh sách điều kiện xét học bổng')
 
+@section('content')
 
-<body>
+<div class="card shadow">
 
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
-<h1>
-    Danh sách điều kiện xét học bổng
-</h1>
+        <h3 class="mb-0">
+            Danh sách điều kiện xét học bổng
+        </h3>
 
+        <div>
 
+            <a href="{{ route('scholarships.index') }}"
+               class="btn btn-light me-2">
 
-@if(session('success'))
+                ← Danh sách học bổng
 
-<p style="color:green">
-    {{ session('success') }}
-</p>
+            </a>
 
-@endif
+            <a href="{{ route('eligibility-rules.create') }}"
+               class="btn btn-success">
 
+                + Thêm điều kiện
 
+            </a>
 
-<a href="{{ route('eligibility-rules.create') }}">
-    + Thêm điều kiện
-</a>
+        </div>
 
+    </div>
 
-<br><br>
+    <div class="card-body">
 
+        @if(session('success'))
 
+            <div class="alert alert-success">
 
-<a href="{{ route('scholarships.index') }}">
-    ← Quay lại danh sách học bổng
-</a>
+                {{ session('success') }}
 
-
-<br><br>
-
-
-
-<table border="1" cellpadding="10" cellspacing="0">
-
-
-<tr>
-
-    <th>ID</th>
-
-    <th>Chương trình học bổng</th>
-
-    <th>GPA tối thiểu</th>
-
-    <th>Tín chỉ tối thiểu</th>
-
-    <th>Nợ môn</th>
-
-    <th>Ghi chú</th>
-
-    <th>Thao tác</th>
-
-</tr>
-
-
-
-@foreach($rules as $rule)
-
-
-<tr>
-
-
-    <td>
-        {{ $rule->id }}
-    </td>
-
-
-
-    <td>
-        {{ $rule->scholarshipProgram->name }}
-    </td>
-
-
-
-    <td>
-        {{ $rule->min_gpa }}
-    </td>
-
-
-
-    <td>
-        {{ $rule->min_credits }}
-    </td>
-
-
-
-    <td>
-
-        @if($rule->allow_debt_subject)
-
-            Có
-
-        @else
-
-            Không
+            </div>
 
         @endif
 
+        <table class="table table-bordered table-hover align-middle">
 
-    </td>
+            <thead class="table-dark">
 
+                <tr>
 
+                    <th>ID</th>
 
-    <td>
-        {{ $rule->note }}
-    </td>
+                    <th>Chương trình học bổng</th>
 
+                    <th>GPA tối thiểu</th>
 
+                    <th>Tín chỉ tối thiểu</th>
 
-    <td>
+                    <th>Nợ môn</th>
 
+                    <th>Ghi chú</th>
 
-        <a href="{{ route('eligibility-rules.edit',$rule->id) }}">
-            Sửa
-        </a>
+                    <th width="180">
+                        Thao tác
+                    </th>
 
+                </tr>
 
+            </thead>
 
-        |
+            <tbody>
 
+            @forelse($rules as $rule)
 
+                <tr>
 
-        <form 
-            action="{{ route('eligibility-rules.destroy',$rule->id) }}"
-            method="POST"
-            style="display:inline;"
-        >
+                    <td>{{ $rule->id }}</td>
 
-            @csrf
+                    <td>{{ $rule->scholarshipProgram->name }}</td>
 
-            @method('DELETE')
+                    <td>{{ $rule->min_gpa }}</td>
 
+                    <td>{{ $rule->min_credits }}</td>
 
-            <button
-                type="submit"
-                onclick="return confirm('Bạn có chắc muốn xóa?')"
-            >
-                Xóa
-            </button>
+                    <td>
 
+                        @if($rule->allow_debt_subject)
 
-        </form>
+                            <span class="badge bg-success">
 
+                                Có
 
+                            </span>
 
-    </td>
+                        @else
 
+                            <span class="badge bg-danger">
 
-</tr>
+                                Không
 
+                            </span>
 
-@endforeach
+                        @endif
 
+                    </td>
 
+                    <td>{{ $rule->note }}</td>
 
-</table>
+                    <td>
 
+                        <a href="{{ route('eligibility-rules.show',$rule->id) }}"
+                           class="btn btn-info btn-sm text-white">
 
+                            Xem
 
-</body>
+                        </a>
 
-</html>
+                        <a href="{{ route('eligibility-rules.edit',$rule->id) }}"
+                           class="btn btn-warning btn-sm">
+
+                            Sửa
+
+                        </a>
+
+                        <form action="{{ route('eligibility-rules.destroy',$rule->id) }}"
+                              method="POST"
+                              class="d-inline">
+
+                            @csrf
+                            @method('DELETE')
+
+                            <button
+                                type="submit"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirm('Bạn có chắc muốn xóa điều kiện này?')">
+
+                                Xóa
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+            @empty
+
+                <tr>
+
+                    <td colspan="7" class="text-center text-muted">
+
+                        Chưa có điều kiện xét học bổng.
+
+                    </td>
+
+                </tr>
+
+            @endforelse
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+@endsection

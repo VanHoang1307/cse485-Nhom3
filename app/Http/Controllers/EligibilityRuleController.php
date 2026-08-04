@@ -8,9 +8,8 @@ use Illuminate\Http\Request;
 
 class EligibilityRuleController extends Controller
 {
-
     /**
-     * Danh sách điều kiện xét học bổng
+     * Hiển thị danh sách điều kiện xét học bổng
      */
     public function index()
     {
@@ -18,30 +17,18 @@ class EligibilityRuleController extends Controller
             ->latest()
             ->get();
 
-
-        return view(
-            'eligibility_rules.index',
-            compact('rules')
-        );
+        return view('eligibility_rules.index', compact('rules'));
     }
 
-
-
     /**
-     * Form thêm điều kiện
+     * Hiển thị form thêm điều kiện
      */
     public function create()
     {
         $scholarships = ScholarshipProgram::all();
 
-
-        return view(
-            'eligibility_rules.create',
-            compact('scholarships')
-        );
+        return view('eligibility_rules.create', compact('scholarships'));
     }
-
-
 
     /**
      * Lưu điều kiện mới
@@ -50,45 +37,38 @@ class EligibilityRuleController extends Controller
     {
         $data = $this->validateData($request);
 
-
         EligibilityRule::create($data);
-
-
 
         return redirect()
             ->route('eligibility-rules.index')
-            ->with(
-                'success',
-                'Thêm điều kiện xét học bổng thành công'
-            );
+            ->with('success', 'Thêm điều kiện xét học bổng thành công');
     }
 
+    /**
+     * Hiển thị chi tiết điều kiện
+     */
+    public function show(string $id)
+    {
+        $rule = EligibilityRule::with('scholarshipProgram')
+            ->findOrFail($id);
 
-
+        return view('eligibility_rules.show', compact('rule'));
+    }
 
     /**
-     * Form chỉnh sửa
+     * Hiển thị form chỉnh sửa
      */
     public function edit(string $id)
     {
         $rule = EligibilityRule::findOrFail($id);
 
-
         $scholarships = ScholarshipProgram::all();
-
-
 
         return view(
             'eligibility_rules.edit',
-            compact(
-                'rule',
-                'scholarships'
-            )
+            compact('rule', 'scholarships')
         );
     }
-
-
-
 
     /**
      * Cập nhật điều kiện
@@ -97,25 +77,14 @@ class EligibilityRuleController extends Controller
     {
         $data = $this->validateData($request);
 
-
         $rule = EligibilityRule::findOrFail($id);
-
 
         $rule->update($data);
 
-
-
         return redirect()
             ->route('eligibility-rules.index')
-            ->with(
-                'success',
-                'Cập nhật điều kiện thành công'
-            );
+            ->with('success', 'Cập nhật điều kiện thành công');
     }
-
-
-
-
 
     /**
      * Xóa điều kiện
@@ -124,22 +93,12 @@ class EligibilityRuleController extends Controller
     {
         $rule = EligibilityRule::findOrFail($id);
 
-
         $rule->delete();
-
-
 
         return redirect()
             ->route('eligibility-rules.index')
-            ->with(
-                'success',
-                'Xóa điều kiện thành công'
-            );
+            ->with('success', 'Xóa điều kiện thành công');
     }
-
-
-
-
 
     /**
      * Validate dữ liệu
@@ -154,7 +113,6 @@ class EligibilityRuleController extends Controller
                 'exists:scholarship_programs,id'
             ],
 
-
             'min_gpa' => [
                 'required',
                 'numeric',
@@ -162,19 +120,16 @@ class EligibilityRuleController extends Controller
                 'max:4'
             ],
 
-
             'min_credits' => [
                 'required',
                 'integer',
                 'min:1'
             ],
 
-
             'allow_debt_subject' => [
                 'required',
                 'boolean'
             ],
-
 
             'note' => [
                 'nullable',
@@ -183,5 +138,4 @@ class EligibilityRuleController extends Controller
 
         ]);
     }
-
 }

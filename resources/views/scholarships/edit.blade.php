@@ -1,299 +1,224 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.app')
 
-<head>
-    <title>Sửa học bổng</title>
-</head>
+@section('title','Cập nhật học bổng')
 
+@section('content')
 
-<body>
+<div class="row justify-content-center">
 
+    <div class="col-lg-8">
 
-<h1>Cập nhật chương trình học bổng</h1>
+        <div class="card shadow">
 
+            <div class="card-header bg-warning">
 
-<a href="{{ route('scholarships.index') }}">
-    ← Quay lại danh sách
-</a>
+                <h3 class="mb-0">
+                    Cập nhật chương trình học bổng
+                </h3>
 
+            </div>
 
-<br><br>
+            <div class="card-body">
 
+                @if($errors->any())
 
+                    <div class="alert alert-danger">
 
-@if($errors->any())
+                        <ul class="mb-0">
 
-<div style="color:red">
+                            @foreach($errors->all() as $error)
 
-    <ul>
+                                <li>{{ $error }}</li>
 
-        @foreach($errors->all() as $error)
+                            @endforeach
 
-            <li>
-                {{ $error }}
-            </li>
+                        </ul>
 
-        @endforeach
+                    </div>
 
-    </ul>
+                @endif
+
+                <form action="{{ route('scholarships.update',$scholarship->id) }}" method="POST">
+
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Tên chương trình
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="name"
+                            value="{{ old('name',$scholarship->name) }}"
+                        >
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Mô tả
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            rows="4"
+                            name="description"
+                        >{{ old('description',$scholarship->description) }}</textarea>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Số tiền
+                            </label>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                name="amount"
+                                value="{{ old('amount',$scholarship->amount) }}"
+                            >
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Năm học
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="academic_year"
+                                value="{{ old('academic_year',$scholarship->academic_year) }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Học kỳ
+                            </label>
+
+                            <select class="form-select" name="semester">
+
+                                <option value="1"
+                                    {{ old('semester',$scholarship->semester)==1 ? 'selected' : '' }}>
+                                    Học kỳ 1
+                                </option>
+
+                                <option value="2"
+                                    {{ old('semester',$scholarship->semester)==2 ? 'selected' : '' }}>
+                                    Học kỳ 2
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Trạng thái
+                            </label>
+
+                            <select class="form-select" name="status">
+
+                                <option value="active"
+                                    {{ old('status',$scholarship->status)=='active' ? 'selected' : '' }}>
+                                    Đang hoạt động
+                                </option>
+
+                                <option value="closed"
+                                    {{ old('status',$scholarship->status)=='closed' ? 'selected' : '' }}>
+                                    Đã đóng
+                                </option>
+
+                                <option value="draft"
+                                    {{ old('status',$scholarship->status)=='draft' ? 'selected' : '' }}>
+                                    Nháp
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Ngày bắt đầu
+                            </label>
+
+                            <input
+                                type="date"
+                                class="form-control"
+                                name="start_date"
+                                value="{{ old('start_date',$scholarship->start_date) }}"
+                            >
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Ngày kết thúc
+                            </label>
+
+                            <input
+                                type="date"
+                                class="form-control"
+                                name="end_date"
+                                value="{{ old('end_date',$scholarship->end_date) }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+
+                        <button class="btn btn-warning">
+                            Cập nhật
+                        </button>
+
+                        <a href="{{ route('scholarships.show',$scholarship->id) }}"
+                           class="btn btn-info text-white">
+                            Xem chi tiết
+                        </a>
+
+                        <a href="{{ route('scholarships.index') }}"
+                           class="btn btn-secondary">
+                            Quay lại
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
-@endif
-
-
-
-
-<form 
-    action="{{ route('scholarships.update',$scholarship->id) }}" 
-    method="POST"
->
-
-
-@csrf
-
-@method('PUT')
-
-
-
-<div>
-
-<label>
-    Tên chương trình:
-</label>
-
-<br>
-
-<input 
-    type="text"
-    name="name"
-    value="{{ old('name',$scholarship->name) }}"
->
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-<label>
-    Mô tả:
-</label>
-
-<br>
-
-<textarea name="description">{{ old('description',$scholarship->description) }}</textarea>
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-<label>
-    Số tiền:
-</label>
-
-<br>
-
-<input 
-    type="number"
-    name="amount"
-    value="{{ old('amount',$scholarship->amount) }}"
->
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-<label>
-    Năm học:
-</label>
-
-<br>
-
-<input 
-    type="number"
-    name="academic_year"
-    value="{{ old('academic_year',$scholarship->academic_year) }}"
->
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-<label>
-    Học kỳ:
-</label>
-
-<br>
-
-
-<select name="semester">
-
-
-<option value="1"
-
-@if($scholarship->semester == 1)
-
-selected
-
-@endif
-
->
-Học kỳ 1
-</option>
-
-
-
-<option value="2"
-
-@if($scholarship->semester == 2)
-
-selected
-
-@endif
-
->
-Học kỳ 2
-</option>
-
-
-</select>
-
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-<label>
-    Ngày bắt đầu:
-</label>
-
-<br>
-
-<input 
-    type="date"
-    name="start_date"
-    value="{{ $scholarship->start_date }}"
->
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-<label>
-    Ngày kết thúc:
-</label>
-
-<br>
-
-<input 
-    type="date"
-    name="end_date"
-    value="{{ $scholarship->end_date }}"
->
-
-</div>
-
-
-
-<br>
-
-
-
-<div>
-
-<label>
-    Trạng thái:
-</label>
-
-<br>
-
-
-<select name="status">
-
-
-<option value="active"
-
-@if($scholarship->status == 'active')
-
-selected
-
-@endif
-
->
-Đang hoạt động
-</option>
-
-
-
-<option value="inactive"
-
-@if($scholarship->status == 'inactive')
-
-selected
-
-@endif
-
->
-Đã đóng
-</option>
-
-
-</select>
-
-
-</div>
-
-
-
-<br>
-
-
-
-<button type="submit">
-    Cập nhật
-</button>
-
-
-
-</form>
-
-
-
-</body>
-
-</html>
+@endsection
