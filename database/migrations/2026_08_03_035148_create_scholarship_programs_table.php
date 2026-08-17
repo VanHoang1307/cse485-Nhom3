@@ -6,51 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('scholarship_programs', function (Blueprint $table) {
+    {
+        Schema::create('scholarship_programs', function (Blueprint $table) {
+            $table->id();
 
-        $table->id();
+            $table->string('name', 255);
+            $table->text('description')->nullable();
 
-        // Tên chương trình học bổng
-        $table->string('name');
+            $table->decimal('amount', 12, 2);
+            $table->string('academic_year', 20);
+            $table->unsignedTinyInteger('semester');
 
-        // Mô tả
-        $table->text('description')->nullable();
+            $table->date('start_date');
+            $table->date('end_date');
 
-        // Giá trị học bổng
-        $table->decimal('amount',12,2);
+            $table->enum('status', [
+                'draft',
+                'active',
+                'closed'
+            ])->default('draft');
 
-        // Năm học
-        $table->string('academic_year',20);
+            $table->timestamps();
 
-        // Học kỳ
-        $table->tinyInteger('semester');
+            // Không cho phép trùng tên chương trình trong cùng năm học và học kỳ
+            $table->unique(
+                ['name', 'academic_year', 'semester'],
+                'scholarship_program_unique'
+            );
+        });
+    }
 
-        // Ngày bắt đầu
-        $table->date('start_date');
-
-        // Ngày kết thúc
-        $table->date('end_date');
-
-        // Trạng thái
-        $table->enum('status',[
-            'draft',
-            'active',
-            'closed'
-        ]);
-
-        $table->timestamps();
-
-    });
-}
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('scholarship_programs');

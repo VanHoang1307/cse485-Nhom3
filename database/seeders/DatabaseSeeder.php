@@ -11,6 +11,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ScholarshipProgramSeeder::class,
             EligibilityRuleSeeder::class,
+            ScoringCriterionSeeder::class,
+            EvaluationCommitteeSeeder::class,
         ]);
     }
 }

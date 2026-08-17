@@ -56,8 +56,11 @@ class ScholarshipProgramController extends Controller
      */
     public function show(string $id)
     {
-        $scholarship = ScholarshipProgram::with('eligibilityRules')
-            ->findOrFail($id);
+        $scholarship = ScholarshipProgram::with([
+            'eligibilityRules',
+            'scoringCriteria',
+            'evaluationCommittees'
+        ])->findOrFail($id);
 
         return view('scholarships.show', compact('scholarship'));
     }

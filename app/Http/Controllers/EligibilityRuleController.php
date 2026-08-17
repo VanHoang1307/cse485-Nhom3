@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EligibilityRule;
 use App\Models\ScholarshipProgram;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class EligibilityRuleController extends Controller
 {
@@ -37,11 +38,14 @@ class EligibilityRuleController extends Controller
     {
         $data = $this->validateData($request);
 
+        // Hệ thống luôn không cho phép sinh viên nợ môn
+        $data['allow_debt_subject'] = false;
+
         EligibilityRule::create($data);
 
         return redirect()
             ->route('eligibility-rules.index')
-            ->with('success', 'Thêm điều kiện xét học bổng thành công');
+            ->with('success', 'Thêm điều kiện xét học bổng thành công.');
     }
 
     /**
@@ -62,12 +66,7 @@ class EligibilityRuleController extends Controller
     {
         $rule = EligibilityRule::findOrFail($id);
 
-        $scholarships = ScholarshipProgram::all();
-
-        return view(
-            'eligibility_rules.edit',
-            compact('rule', 'scholarships')
-        );
+        return view('eligibility_rules.edit', compact('rule'));
     }
 
     /**
@@ -75,15 +74,18 @@ class EligibilityRuleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = $this->validateData($request);
-
         $rule = EligibilityRule::findOrFail($id);
+
+        $data = $this->validateData($request, $rule->id);
+
+        // Luôn đảm bảo không cho phép nợ môn
+        $data['allow_debt_subject'] = false;
 
         $rule->update($data);
 
         return redirect()
-            ->route('eligibility-rules.index')
-            ->with('success', 'Cập nhật điều kiện thành công');
+            ->route('scholarships.show', $rule->scholarship_program_id)
+            ->with('success', 'Cập nhật điều kiện xét học bổng thành công.');
     }
 
     /**
@@ -93,49 +95,49 @@ class EligibilityRuleController extends Controller
     {
         $rule = EligibilityRule::findOrFail($id);
 
+        $scholarshipId = $rule->scholarship_program_id;
+
         $rule->delete();
 
         return redirect()
-            ->route('eligibility-rules.index')
-            ->with('success', 'Xóa điều kiện thành công');
+            ->route('scholarships.show', $scholarshipId)
+            ->with('success', 'Xóa điều kiện xét học bổng thành công.');
     }
 
     /**
      * Validate dữ liệu
      */
-    private function validateData(Request $request)
+    private function validateData(Request $request, $ruleId = null)
     {
         return $request->validate([
-
             'scholarship_program_id' => [
                 'required',
                 'integer',
-                'exists:scholarship_programs,id'
+                'exists:scholarship_programs,id',
+                Rule::unique('eligibility_rules', 'scholarship_program_id')
+                    ->ignore($ruleId),
             ],
 
             'min_gpa' => [
                 'required',
                 'numeric',
                 'min:0',
-                'max:4'
+                'max:4',
             ],
 
             'min_credits' => [
                 'required',
                 'integer',
-                'min:1'
-            ],
-
-            'allow_debt_subject' => [
-                'required',
-                'boolean'
+                'min:1',
             ],
 
             'note' => [
                 'nullable',
-                'string'
+                'string',
             ],
-
+        ], [
+            'scholarship_program_id.unique' =>
+                'Chương trình học bổng này đã có điều kiện xét duyệt.',
         ]);
     }
 }

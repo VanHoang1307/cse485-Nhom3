@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class EligibilityRule extends Model
+class ScoringCriterion extends Model
 {
     protected $fillable = [
         'scholarship_program_id',
-        'min_gpa',
-        'min_credits',
-        'allow_debt_subject',
-        'note',
+        'criteria_name',
+        'max_score',
+        'weight',
+        'description',
     ];
 
     public function scholarshipProgram(): BelongsTo

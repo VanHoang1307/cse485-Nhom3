@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ScholarshipProgram extends Model
 {
-
     protected $fillable = [
         'name',
         'description',
@@ -19,10 +18,24 @@ class ScholarshipProgram extends Model
         'status',
     ];
 
-
     public function eligibilityRules(): HasMany
     {
         return $this->hasMany(EligibilityRule::class);
     }
 
+    public function scoringCriteria(): HasMany
+    {
+        return $this->hasMany(
+            ScoringCriterion::class,
+            'scholarship_program_id'
+        );
+    }
+
+    public function evaluationCommittees(): HasMany
+    {
+        return $this->hasMany(
+            EvaluationCommittee::class,
+            'scholarship_program_id'
+        );
+    }
 }

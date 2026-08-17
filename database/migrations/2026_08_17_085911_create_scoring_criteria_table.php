@@ -8,33 +8,32 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('eligibility_rules', function (Blueprint $table) {
+        Schema::create('scoring_criteria', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('scholarship_program_id')
                 ->constrained('scholarship_programs')
                 ->cascadeOnDelete();
 
-            $table->decimal('min_gpa', 3, 2);
-            $table->unsignedInteger('min_credits');
+            $table->string('criteria_name', 255);
 
-            $table->boolean('allow_debt_subject')
-                ->default(false);
+            $table->decimal('max_score', 5, 2);
+            $table->decimal('weight', 5, 2);
 
-            $table->text('note')->nullable();
+            $table->text('description')->nullable();
 
             $table->timestamps();
 
-            // Mỗi chương trình có một bộ điều kiện xét duyệt
+            // Không cho phép trùng tên tiêu chí trong cùng chương trình
             $table->unique(
-                'scholarship_program_id',
-                'eligibility_program_unique'
+                ['scholarship_program_id', 'criteria_name'],
+                'scoring_criteria_unique'
             );
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('eligibility_rules');
+        Schema::dropIfExists('scoring_criteria');
     }
 };

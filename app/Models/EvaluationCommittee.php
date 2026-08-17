@@ -3,19 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class EligibilityRule extends Model
+class EvaluationCommittee extends Model
 {
     protected $fillable = [
         'scholarship_program_id',
-        'min_gpa',
-        'min_credits',
-        'allow_debt_subject',
-        'note',
+        'committee_name',
+        'chairman',
+        'decision_date',
+        'status',
     ];
 
-    public function scholarshipProgram(): BelongsTo
+    public function scholarshipProgram()
     {
         return $this->belongsTo(
             ScholarshipProgram::class,
