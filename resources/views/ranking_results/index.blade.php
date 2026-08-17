@@ -1,21 +1,36 @@
-@extends('layouts.admin')
+<!DOCTYPE html>
+<html lang="vi">
 
-@section('title', 'Kết quả xếp hạng')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-@section('page_heading', 'Kết quả xếp hạng')
+    <title>Kết quả xếp hạng</title>
 
-@section('content')
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+</head>
 
-<div class="container-fluid">
+<body>
+
+<div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
-            Kết quả xếp hạng
-        </h2>
+        <div>
+            <h2 class="mb-1">
+                Kết quả xếp hạng
+            </h2>
+
+            <p class="text-muted mb-0">
+                Quản lý kết quả xếp hạng hồ sơ học bổng
+            </p>
+        </div>
 
         <a
-            href="{{ route('ranking_results.create') }}"
+            href="{{ route('ranking-results.create') }}"
             class="btn btn-primary"
         >
             + Thêm kết quả
@@ -25,175 +40,249 @@
 
     @if(session('success'))
 
-        <div class="alert alert-success">
+        <div class="alert alert-success alert-dismissible fade show">
+
             {{ session('success') }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+
         </div>
 
     @endif
 
-    @if($results->count() > 0)
+    @if(session('error'))
 
-        <div class="card">
+        <div class="alert alert-danger alert-dismissible fade show">
 
-            <div class="card-body">
+            {{ session('error') }}
 
-                <div class="table-responsive">
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
 
-                    <table class="table table-bordered table-hover">
+        </div>
 
-                        <thead>
+    @endif
 
-                            <tr>
-                                <th>STT</th>
-                                <th>Hồ sơ</th>
-                                <th>Sinh viên</th>
-                                <th>Tổng điểm</th>
-                                <th>Thứ hạng</th>
-                                <th width="250">Thao tác</th>
-                            </tr>
+    <div class="card shadow-sm">
 
-                        </thead>
+        <div class="card-body p-0">
 
-                        <tbody>
+            <div class="table-responsive">
 
-                            @foreach($results as $result)
+                <table class="table table-bordered table-hover align-middle mb-0">
 
-                                <tr>
+                    <thead class="table-dark">
 
-                                    <td>
-                                        {{ $results->firstItem() + $loop->index }}
-                                    </td>
+                        <tr>
 
-                                    <td>
+                            <th style="width: 70px;">
+                                STT
+                            </th>
 
-                                        @if($result->application)
+                            <th>
+                                Hồ sơ
+                            </th>
 
-                                            {{ $result->application->application_code }}
+                            <th>
+                                Tổng điểm
+                            </th>
 
-                                        @else
+                            <th>
+                                Thứ hạng
+                            </th>
 
-                                            Không xác định
+                            <th>
+                                Kết quả
+                            </th>
 
-                                        @endif
+                            <th>
+                                Ngày tạo
+                            </th>
 
-                                    </td>
+                            <th
+                                style="width: 240px;"
+                                class="text-center"
+                            >
+                                Thao tác
+                            </th>
 
-                                    <td>
+                        </tr>
 
-                                        @if(
-                                            $result->application &&
-                                            $result->application->student
-                                        )
+                    </thead>
 
-                                            {{ $result->application->student->full_name }}
+                    <tbody>
 
-                                        @else
+                    @forelse($results as $result)
 
-                                            Không xác định
+                        <tr>
 
-                                        @endif
+                            <td>
+                                {{ $results->firstItem() + $loop->index }}
+                            </td>
 
-                                    </td>
+                            <td>
 
-                                    <td>
-                                        <strong>
-                                            {{ number_format($result->total_score, 2) }}
-                                        </strong>
-                                    </td>
+                                @if($result->application)
 
-                                    <td>
+                                    <strong>
+                                        {{ $result->application->application_code }}
+                                    </strong>
 
-                                        @if($result->rank == 1)
+                                @else
 
-                                            <span class="badge bg-warning text-dark">
-                                                Hạng 1
-                                            </span>
+                                    <span class="text-muted">
+                                        Không xác định
+                                    </span>
 
-                                        @elseif($result->rank == 2)
+                                @endif
 
-                                            <span class="badge bg-secondary">
-                                                Hạng 2
-                                            </span>
+                            </td>
 
-                                        @elseif($result->rank == 3)
+                            <td>
 
-                                            <span class="badge bg-danger">
-                                                Hạng 3
-                                            </span>
+                                <strong>
+                                    {{ number_format($result->total_score, 2) }}
+                                </strong>
 
-                                        @else
+                            </td>
 
-                                            <span class="badge bg-info">
-                                                Hạng {{ $result->rank }}
-                                            </span>
+                            <td>
 
-                                        @endif
+                                <span class="badge bg-primary">
 
-                                    </td>
+                                    Hạng {{ $result->ranking }}
 
-                                    <td>
+                                </span>
 
-                                        <a
-                                            href="{{ route('ranking_results.show', $result) }}"
-                                            class="btn btn-info btn-sm"
+                            </td>
+
+                            <td>
+
+                                @if($result->result === 'Qualified')
+
+                                    <span class="badge bg-success">
+                                        Đạt
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-danger">
+                                        Không đạt
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                @if($result->created_at)
+
+                                    {{ $result->created_at->format('d/m/Y H:i') }}
+
+                                @else
+
+                                    -
+
+                                @endif
+
+                            </td>
+
+                            <td>
+
+                                <div class="d-flex justify-content-center gap-1">
+
+                                    <a
+                                        href="{{ route('ranking-results.show', $result) }}"
+                                        class="btn btn-sm btn-info text-white"
+                                    >
+                                        Xem
+                                    </a>
+
+                                    <a
+                                        href="{{ route('ranking-results.edit', $result) }}"
+                                        class="btn btn-sm btn-warning"
+                                    >
+                                        Sửa
+                                    </a>
+
+                                    <form
+                                        action="{{ route('ranking-results.destroy', $result) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa kết quả này không?');"
+                                    >
+
+                                        @csrf
+
+                                        @method('DELETE')
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-danger"
                                         >
-                                            Xem
-                                        </a>
+                                            Xóa
+                                        </button>
 
-                                        <a
-                                            href="{{ route('ranking_results.edit', $result) }}"
-                                            class="btn btn-warning btn-sm"
-                                        >
-                                            Sửa
-                                        </a>
+                                    </form>
 
-                                        <form
-                                            action="{{ route('ranking_results.destroy', $result) }}"
-                                            method="POST"
-                                            class="d-inline"
-                                            onsubmit="return confirm('Bạn có chắc muốn xóa kết quả này?')"
-                                        >
+                                </div>
 
-                                            @csrf
+                            </td>
 
-                                            @method('DELETE')
+                        </tr>
 
-                                            <button
-                                                type="submit"
-                                                class="btn btn-danger btn-sm"
-                                            >
-                                                Xóa
-                                            </button>
+                    @empty
 
-                                        </form>
+                        <tr>
 
-                                    </td>
+                            <td
+                                colspan="7"
+                                class="text-center py-5"
+                            >
 
-                                </tr>
+                                <h5 class="text-muted">
+                                    Chưa có kết quả xếp hạng
+                                </h5>
 
-                            @endforeach
+                                <p class="text-muted mb-3">
+                                    Hãy thêm kết quả xếp hạng đầu tiên.
+                                </p>
 
-                        </tbody>
+                                <a
+                                    href="{{ route('ranking-results.create') }}"
+                                    class="btn btn-primary"
+                                >
+                                    + Thêm kết quả
+                                </a>
 
-                    </table>
+                            </td>
 
-                </div>
+                        </tr>
 
-                <div class="mt-3">
+                    @endforelse
 
-                    {{ $results->links() }}
+                    </tbody>
 
-                </div>
+                </table>
 
             </div>
 
         </div>
 
-    @else
+    </div>
 
-        <div class="alert alert-info">
+    @if($results->hasPages())
 
-            Chưa có kết quả xếp hạng.
+        <div class="d-flex justify-content-center mt-4">
+
+            {{ $results->links() }}
 
         </div>
 
@@ -201,4 +290,10 @@
 
 </div>
 
-@endsection
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
+</body>
+
+</html>

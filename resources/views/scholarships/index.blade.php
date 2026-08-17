@@ -4,30 +4,67 @@
 
 @section('content')
 
-<div class="card shadow">
+<div class="card shadow-sm border-0">
 
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    {{-- Header --}}
+    <div class="card-header bg-primary text-white p-3">
 
-        <h3 class="mb-0">
-            Danh sách chương trình học bổng
-        </h3>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
 
-        <a href="{{ route('scholarships.create') }}"
-           class="btn btn-light">
+            <div>
+                <h3 class="mb-1">
+                    🎓 Danh sách chương trình học bổng
+                </h3>
 
-            + Thêm chương trình học bổng
+                <small>
+                    Quản lý các chương trình học bổng của hệ thống
+                </small>
+            </div>
 
-        </a>
+            <a href="{{ route('scholarships.create') }}"
+               class="btn btn-light fw-semibold">
+
+                + Thêm chương trình
+
+            </a>
+
+        </div>
 
     </div>
 
-    <div class="card-body">
+    <div class="card-body p-4">
 
+        {{-- Thông báo thành công --}}
         @if(session('success'))
 
-            <div class="alert alert-success">
+            <div class="alert alert-success alert-dismissible fade show"
+                 role="alert">
 
+                <strong>✓ Thành công!</strong>
                 {{ session('success') }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+
+            </div>
+
+        @endif
+
+        {{-- Thông báo lỗi --}}
+        @if(session('error'))
+
+            <div class="alert alert-danger alert-dismissible fade show"
+                 role="alert">
+
+                <strong>⚠ Không thể thực hiện!</strong>
+                {{ session('error') }}
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
 
             </div>
 
@@ -36,9 +73,13 @@
         {{-- Form tìm kiếm --}}
         <form method="GET"
               action="{{ route('scholarships.index') }}"
-              class="row g-3 mb-4">
+              class="row g-2 mb-4">
 
-            <div class="col-md-8">
+            <div class="col-12 col-md-8">
+
+                <label class="form-label fw-semibold">
+                    Tìm kiếm
+                </label>
 
                 <input
                     type="text"
@@ -49,16 +90,17 @@
 
             </div>
 
-            <div class="col-md-4">
+            <div class="col-12 col-md-4 d-flex align-items-end gap-2">
 
-                <button class="btn btn-primary">
+                <button type="submit"
+                        class="btn btn-primary">
 
-                    Tìm kiếm
+                    🔍 Tìm kiếm
 
                 </button>
 
                 <a href="{{ route('scholarships.index') }}"
-                   class="btn btn-secondary">
+                   class="btn btn-outline-secondary">
 
                     Làm mới
 
@@ -68,150 +110,326 @@
 
         </form>
 
-        <table class="table table-bordered table-hover align-middle">
+        {{-- Thông tin kết quả --}}
+        @if($scholarships->total() > 0)
 
-            <thead class="table-dark">
+            <div class="d-flex justify-content-between align-items-center mb-3">
 
-                <tr>
+                <div class="text-muted">
 
-                    <th>ID</th>
+                    Hiển thị
+                    <strong>{{ $scholarships->firstItem() }}</strong>
+                    -
+                    <strong>{{ $scholarships->lastItem() }}</strong>
+                    trong tổng số
+                    <strong>{{ $scholarships->total() }}</strong>
+                    chương trình
 
-                    <th>Tên chương trình</th>
+                </div>
 
-                    <th>Mô tả</th>
+                @if(request('keyword'))
 
-                    <th>Số tiền</th>
+                    <span class="badge bg-info text-dark">
 
-                    <th>Năm học</th>
+                        Kết quả tìm kiếm:
+                        "{{ request('keyword') }}"
 
-                    <th>Học kỳ</th>
+                    </span>
 
-                    <th>Trạng thái</th>
+                @endif
 
-                    <th width="220">
-                        Thao tác
-                    </th>
+            </div>
 
-                </tr>
+        @endif
 
-            </thead>
+        {{-- Bảng dữ liệu --}}
+        <div class="table-responsive">
 
-            <tbody>
+            <table class="table table-bordered table-hover align-middle mb-0">
 
-            @forelse($scholarships as $item)
+                <thead class="table-dark">
 
-                <tr>
+                    <tr>
 
-                    <td>{{ $item->id }}</td>
+                        <th class="text-center">
+                            ID
+                        </th>
 
-                    <td>{{ $item->name }}</td>
+                        <th>
+                            Tên chương trình
+                        </th>
 
-                    <td>{{ $item->description }}</td>
+                        <th>
+                            Mô tả
+                        </th>
 
-                    <td>{{ number_format($item->amount) }} VNĐ</td>
+                        <th class="text-end">
+                            Số tiền
+                        </th>
 
-                    <td>{{ $item->academic_year }}</td>
+                        <th>
+                            Năm học
+                        </th>
 
-                    <td>
+                        <th class="text-center">
+                            Học kỳ
+                        </th>
 
-                        Học kỳ {{ $item->semester }}
+                        <th class="text-center">
+                            Trạng thái
+                        </th>
 
-                    </td>
+                        <th class="text-center">
+                            Thao tác
+                        </th>
 
-                    <td>
+                    </tr>
 
-                        @if($item->status == 'active')
+                </thead>
 
-                            <span class="badge bg-success">
+                <tbody>
 
-                                Đang hoạt động
+                @forelse($scholarships as $item)
+
+                    <tr>
+
+                        <td class="text-center fw-semibold">
+                            {{ $item->id }}
+                        </td>
+
+                        <td>
+
+                            <div class="fw-semibold">
+                                {{ $item->name }}
+                            </div>
+
+                            <small class="text-muted">
+                                Chương trình #{{ $item->id }}
+                            </small>
+
+                        </td>
+
+                        <td>
+
+                            @if($item->description)
+
+                                <span title="{{ $item->description }}">
+
+                                    {{ \Illuminate\Support\Str::limit($item->description, 50) }}
+
+                                </span>
+
+                            @else
+
+                                <span class="text-muted fst-italic">
+                                    Chưa có mô tả
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <td class="text-end fw-semibold">
+
+                            {{ number_format($item->amount, 0, ',', '.') }}
+                            VNĐ
+
+                        </td>
+
+                        <td>
+                            {{ $item->academic_year }}
+                        </td>
+
+                        <td class="text-center">
+
+                            <span class="badge bg-light text-dark border">
+
+                                HK{{ $item->semester }}
 
                             </span>
 
-                        @elseif($item->status == 'draft')
+                        </td>
 
-                            <span class="badge bg-warning text-dark">
+                        <td class="text-center">
 
-                                Nháp
+                            @if($item->status === 'active')
 
-                            </span>
+                                <span class="badge bg-success">
+                                    ● Đang hoạt động
+                                </span>
 
-                        @else
+                            @elseif($item->status === 'draft')
 
-                            <span class="badge bg-secondary">
+                                <span class="badge bg-warning text-dark">
+                                    ● Nháp
+                                </span>
 
-                                Đã đóng
+                            @elseif($item->status === 'closed')
 
-                            </span>
+                                <span class="badge bg-secondary">
+                                    ● Đã đóng
+                                </span>
 
-                        @endif
+                            @endif
 
-                    </td>
+                        </td>
 
-                    <td>
+                        <td class="text-center">
 
-                        <a href="{{ route('scholarships.show',$item->id) }}"
-                           class="btn btn-info btn-sm text-white">
+                            <div class="d-flex flex-wrap justify-content-center gap-1">
 
-                            Xem
+                                {{-- Xem --}}
+                                <a href="{{ route('scholarships.show', $item->id) }}"
+                                   class="btn btn-info btn-sm text-white"
+                                   title="Xem chi tiết">
 
-                        </a>
+                                    👁 Xem
 
-                        <a href="{{ route('scholarships.edit',$item->id) }}"
-                           class="btn btn-warning btn-sm">
+                                </a>
 
-                            Sửa
+                                {{-- Sửa --}}
+                                @if($item->status !== 'closed')
 
-                        </a>
+                                    <a href="{{ route('scholarships.edit', $item->id) }}"
+                                       class="btn btn-warning btn-sm"
+                                       title="Chỉnh sửa">
 
-                        <form action="{{ route('scholarships.destroy',$item->id) }}"
-                              method="POST"
-                              class="d-inline">
+                                        ✏ Sửa
 
-                            @csrf
-                            @method('DELETE')
+                                    </a>
 
-                            <button
-                                type="submit"
-                                class="btn btn-danger btn-sm"
-                                onclick="return confirm('Bạn có chắc muốn xóa?')">
+                                @endif
 
-                                Xóa
+                                {{-- Đóng chương trình --}}
+                                @if($item->status !== 'closed')
 
-                            </button>
+                                    <form action="{{ route('scholarships.close', $item->id) }}"
+                                          method="POST"
+                                          class="d-inline">
 
-                        </form>
+                                        @csrf
+                                        @method('PATCH')
 
-                    </td>
+                                        <button type="submit"
+                                                class="btn btn-secondary btn-sm"
+                                                title="Đóng chương trình"
+                                                onclick="return confirm('Bạn có chắc muốn đóng chương trình học bổng này? Dữ liệu lịch sử sẽ được giữ lại.')">
 
-                </tr>
+                                            🔒 Đóng
 
-            @empty
+                                        </button>
 
-                <tr>
+                                    </form>
 
-                    <td colspan="8" class="text-center text-muted">
+                                @endif
 
-                        Chưa có chương trình học bổng nào.
+                                {{-- Xóa --}}
+                                @if($item->status !== 'closed')
 
-                    </td>
+                                    <form action="{{ route('scholarships.destroy', $item->id) }}"
+                                          method="POST"
+                                          class="d-inline">
 
-                </tr>
+                                        @csrf
+                                        @method('DELETE')
 
-            @endforelse
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"
+                                                title="Xóa chương trình"
+                                                onclick="return confirm('Bạn có chắc muốn xóa chương trình này? Chỉ nên xóa chương trình chưa có dữ liệu liên quan.')">
 
-            </tbody>
+                                            🗑 Xóa
 
-        </table>
+                                        </button>
 
-        <div class="d-flex justify-content-center">
+                                    </form>
 
-            {{ $scholarships->links() }}
+                                @endif
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td colspan="8"
+                            class="text-center py-5">
+
+                            <div class="fs-1 mb-2">
+                                📭
+                            </div>
+
+                            @if(request('keyword'))
+
+                                <h5>
+                                    Không tìm thấy chương trình
+                                </h5>
+
+                                <p class="text-muted mb-3">
+
+                                    Không có học bổng nào phù hợp với từ khóa
+                                    "<strong>{{ request('keyword') }}</strong>".
+
+                                </p>
+
+                                <a href="{{ route('scholarships.index') }}"
+                                   class="btn btn-outline-primary">
+
+                                    Xem tất cả chương trình
+
+                                </a>
+
+                            @else
+
+                                <h5>
+                                    Chưa có chương trình học bổng
+                                </h5>
+
+                                <p class="text-muted mb-3">
+
+                                    Hãy thêm chương trình học bổng đầu tiên.
+
+                                </p>
+
+                                <a href="{{ route('scholarships.create') }}"
+                                   class="btn btn-primary">
+
+                                    + Thêm chương trình
+
+                                </a>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+                </tbody>
+
+            </table>
 
         </div>
+
+        {{-- Phân trang --}}
+        @if($scholarships->hasPages())
+
+            <div class="d-flex justify-content-center mt-4">
+
+                {{ $scholarships->links() }}
+
+            </div>
+
+        @endif
 
     </div>
 
 </div>
 
 @endsection
+

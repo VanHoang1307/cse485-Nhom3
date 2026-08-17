@@ -1,331 +1,437 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
+@section('title', 'Quản lý minh chứng')
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('content')
 
-    <title>Quản lý minh chứng</title>
+<div class="card shadow">
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
-
-<body>
-
-<div class="container mt-4">
-
-    {{-- Tiêu đề --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    {{-- Header --}}
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
         <div>
-            <h2 class="mb-1">
+            <h3 class="mb-1">
                 Quản lý minh chứng
-            </h2>
+            </h3>
 
-            <p class="text-muted mb-0">
+            <small>
                 Danh sách các minh chứng của hồ sơ học bổng
-            </p>
+            </small>
         </div>
 
-        <a
-            href="{{ route('application_documents.create') }}"
-            class="btn btn-primary"
-        >
-            + Thêm minh chứng
-        </a>
+        <div>
+
+            <a
+                href="{{ route('applications.index') }}"
+                class="btn btn-light me-2"
+            >
+                📋 Hồ sơ học bổng
+            </a>
+
+            <a
+                href="{{ route('application-documents.create') }}"
+                class="btn btn-success"
+            >
+                + Thêm minh chứng
+            </a>
+
+        </div>
 
     </div>
 
+    <div class="card-body">
 
-    {{-- Thông báo thành công --}}
-    @if(session('success'))
+        {{-- Thông báo thành công --}}
+        @if(session('success'))
 
-        <div class="alert alert-success alert-dismissible fade show">
+            <div class="alert alert-success alert-dismissible fade show">
 
-            {{ session('success') }}
+                <strong>Thành công!</strong>
+                {{ session('success') }}
 
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
 
-        </div>
+            </div>
 
-    @endif
+        @endif
 
+        {{-- Thông báo lỗi --}}
+        @if(session('error'))
 
-    {{-- Thông báo lỗi --}}
-    @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show">
 
-        <div class="alert alert-danger alert-dismissible fade show">
+                <strong>Không thể thực hiện!</strong>
+                {{ session('error') }}
 
-            {{ session('error') }}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
 
-            <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-            ></button>
+            </div>
 
-        </div>
+        @endif
 
-    @endif
+        {{-- Thống kê --}}
+        <div class="row mb-4">
 
+            <div class="col-md-3 mb-3">
 
-    {{-- Bảng dữ liệu --}}
-    <div class="card shadow-sm">
+                <div class="card border-primary h-100">
 
-        <div class="card-body p-0">
+                    <div class="card-body">
 
-            <div class="table-responsive">
+                        <h6 class="text-muted">
+                            Tổng minh chứng
+                        </h6>
 
-                <table class="table table-bordered table-hover align-middle mb-0">
+                        <h3 class="text-primary mb-0">
+                            {{ $documents->total() }}
+                        </h3>
 
-                    <thead class="table-dark">
+                    </div>
 
-                        <tr>
+                </div>
 
-                            <th style="width: 70px;">
-                                STT
-                            </th>
+            </div>
 
-                            <th>
-                                Mã đơn
-                            </th>
+            <div class="col-md-3 mb-3">
 
-                            <th>
-                                Loại minh chứng
-                            </th>
+                <div class="card border-warning h-100">
 
-                            <th>
-                                File minh chứng
-                            </th>
+                    <div class="card-body">
 
-                            <th>
-                                Ngày tạo
-                            </th>
+                        <h6 class="text-muted">
+                            Chờ xác minh
+                        </h6>
 
-                            <th
-                                style="width: 240px;"
-                                class="text-center"
-                            >
-                                Thao tác
-                            </th>
+                        <h3 class="text-warning mb-0">
 
-                        </tr>
+                            {{ $documents->where('verification_status', 'Pending')->count() }}
 
-                    </thead>
+                        </h3>
 
+                    </div>
 
-                    <tbody>
+                </div>
 
-                        @forelse($documents as $document)
+            </div>
 
-                            <tr>
+            <div class="col-md-3 mb-3">
 
-                                {{-- STT --}}
-                                <td>
+                <div class="card border-success h-100">
 
-                                    {{ $documents->firstItem() + $loop->index }}
+                    <div class="card-body">
 
-                                </td>
+                        <h6 class="text-muted">
+                            Đã xác minh
+                        </h6>
 
+                        <h3 class="text-success mb-0">
 
-                                {{-- Application --}}
-                                <td>
+                            {{ $documents->where('verification_status', 'Approved')->count() }}
 
-                                    @if($document->application)
+                        </h3>
 
-                                        <strong>
-                                            {{ $document->application->application_code }}
-                                        </strong>
+                    </div>
 
-                                    @else
+                </div>
 
-                                        <span class="text-muted">
-                                            Không xác định
-                                        </span>
+            </div>
 
-                                    @endif
+            <div class="col-md-3 mb-3">
 
-                                </td>
+                <div class="card border-danger h-100">
 
+                    <div class="card-body">
 
-                                {{-- Loại minh chứng --}}
-                                <td>
+                        <h6 class="text-muted">
+                            Từ chối
+                        </h6>
 
-                                    {{ $document->document_type }}
+                        <h3 class="text-danger mb-0">
 
-                                </td>
+                            {{ $documents->where('verification_status', 'Rejected')->count() }}
 
+                        </h3>
 
-                                {{-- FILE --}}
-                                <td>
+                    </div>
 
-                                    @if($document->file_path)
-
-                                        <a
-                                            href="{{ asset('storage/' . $document->file_path) }}"
-                                            target="_blank"
-                                            class="btn btn-sm btn-primary"
-                                        >
-                                            📄 Xem file
-                                        </a>
-
-                                        <div class="small text-muted mt-1">
-
-                                            {{ basename($document->file_path) }}
-
-                                        </div>
-
-                                    @else
-
-                                        <span class="badge bg-secondary">
-
-                                            Chưa có file
-
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-
-                                {{-- Ngày tạo --}}
-                                <td>
-
-                                    @if($document->created_at)
-
-                                        {{ $document->created_at->format('d/m/Y H:i') }}
-
-                                    @else
-
-                                        -
-
-                                    @endif
-
-                                </td>
-
-
-                                {{-- Thao tác --}}
-                                <td class="text-center">
-
-                                    <div class="d-flex justify-content-center gap-1">
-
-
-                                        {{-- Xem --}}
-                                        <a
-                                            href="{{ route('application_documents.show', $document) }}"
-                                            class="btn btn-sm btn-info text-white"
-                                        >
-                                            Xem
-                                        </a>
-
-
-                                        {{-- Sửa --}}
-                                        <a
-                                            href="{{ route('application_documents.edit', $document) }}"
-                                            class="btn btn-sm btn-warning"
-                                        >
-                                            Sửa
-                                        </a>
-
-
-                                        {{-- Xóa --}}
-                                        <form
-                                            action="{{ route('application_documents.destroy', $document) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Bạn có chắc chắn muốn xóa minh chứng này không?');"
-                                        >
-
-                                            @csrf
-
-                                            @method('DELETE')
-
-                                            <button
-                                                type="submit"
-                                                class="btn btn-sm btn-danger"
-                                            >
-                                                Xóa
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        @empty
-
-                            <tr>
-
-                                <td
-                                    colspan="6"
-                                    class="text-center py-5"
-                                >
-
-                                    <div class="text-muted">
-
-                                        <h5>
-                                            Chưa có minh chứng
-                                        </h5>
-
-                                        <p class="mb-3">
-                                            Hãy thêm minh chứng đầu tiên cho hồ sơ.
-                                        </p>
-
-                                        <a
-                                            href="{{ route('application_documents.create') }}"
-                                            class="btn btn-primary"
-                                        >
-                                            + Thêm minh chứng
-                                        </a>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
+                </div>
 
             </div>
 
         </div>
 
-    </div>
+        {{-- Bảng dữ liệu --}}
+        <div class="table-responsive">
 
+            <table class="table table-bordered table-hover align-middle">
 
-    {{-- Phân trang --}}
-    @if($documents->hasPages())
+                <thead class="table-dark">
 
-        <div class="d-flex justify-content-center mt-4">
+                    <tr>
 
-            {{ $documents->links() }}
+                        <th style="width: 70px;">
+                            STT
+                        </th>
+
+                        <th>
+                            Mã hồ sơ
+                        </th>
+
+                        <th>
+                            Tên minh chứng
+                        </th>
+
+                        <th>
+                            Loại minh chứng
+                        </th>
+
+                        <th>
+                            File
+                        </th>
+
+                        <th>
+                            Trạng thái xác minh
+                        </th>
+
+                        <th>
+                            Ngày tạo
+                        </th>
+
+                        <th
+                            style="width: 250px;"
+                            class="text-center"
+                        >
+                            Thao tác
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @forelse($documents as $document)
+
+                        <tr>
+
+                            {{-- STT --}}
+                            <td>
+                                {{ $documents->firstItem() + $loop->index }}
+                            </td>
+
+                            {{-- Mã hồ sơ --}}
+                            <td>
+
+                                @if($document->application)
+
+                                    <strong>
+                                        {{ $document->application->application_code }}
+                                    </strong>
+
+                                @else
+
+                                    <span class="text-danger">
+                                        Không xác định
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            {{-- Tên minh chứng --}}
+                            <td>
+
+                                {{ $document->document_name }}
+
+                            </td>
+
+                            {{-- Loại minh chứng --}}
+                            <td>
+
+                                {{ $document->document_type }}
+
+                            </td>
+
+                            {{-- File --}}
+                            <td>
+
+                                @if($document->file_path)
+
+                                    <a
+                                        href="{{ asset('storage/' . $document->file_path) }}"
+                                        target="_blank"
+                                        class="btn btn-sm btn-primary"
+                                    >
+                                        📄 Xem file
+                                    </a>
+
+                                @else
+
+                                    <span class="badge bg-secondary">
+                                        Chưa có file
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            {{-- Trạng thái --}}
+                            <td>
+
+                                @if($document->verification_status === 'Pending')
+
+                                    <span class="badge bg-warning text-dark">
+                                        Chờ xác minh
+                                    </span>
+
+                                @elseif($document->verification_status === 'Approved')
+
+                                    <span class="badge bg-success">
+                                        Đã xác minh
+                                    </span>
+
+                                @elseif($document->verification_status === 'Rejected')
+
+                                    <span class="badge bg-danger">
+                                        Từ chối
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-secondary">
+                                        {{ $document->verification_status }}
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            {{-- Ngày tạo --}}
+                            <td>
+
+                                @if($document->created_at)
+
+                                    {{ $document->created_at->format('d/m/Y H:i') }}
+
+                                @else
+
+                                    -
+
+                                @endif
+
+                            </td>
+
+                            {{-- Thao tác --}}
+                            <td class="text-center">
+
+                                <div class="d-flex justify-content-center gap-1">
+
+                                    <a
+                                        href="{{ route('application-documents.show', $document) }}"
+                                        class="btn btn-sm btn-info text-white"
+                                    >
+                                        Xem
+                                    </a>
+
+                                    <a
+                                        href="{{ route('application-documents.edit', $document) }}"
+                                        class="btn btn-sm btn-warning"
+                                    >
+                                        Sửa
+                                    </a>
+
+                                    <form
+                                        action="{{ route('application-documents.destroy', $document) }}"
+                                        method="POST"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa minh chứng này không?');"
+                                    >
+
+                                        @csrf
+
+                                        @method('DELETE')
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-danger"
+                                        >
+                                            Xóa
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+
+                            <td
+                                colspan="8"
+                                class="text-center py-5"
+                            >
+
+                                <div class="text-muted">
+
+                                    <div class="fs-1 mb-3">
+                                        📄
+                                    </div>
+
+                                    <h5>
+                                        Chưa có minh chứng
+                                    </h5>
+
+                                    <p class="mb-3">
+                                        Hãy thêm minh chứng đầu tiên cho hồ sơ.
+                                    </p>
+
+                                    <a
+                                        href="{{ route('application-documents.create') }}"
+                                        class="btn btn-primary"
+                                    >
+                                        + Thêm minh chứng
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
 
         </div>
 
-    @endif
+        {{-- Phân trang --}}
+        @if($documents->hasPages())
 
+            <div class="d-flex justify-content-center mt-4">
+
+                {{ $documents->links() }}
+
+            </div>
+
+        @endif
+
+    </div>
 
 </div>
 
+@endsection
 
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-></script>
-
-</body>
-
-</html>

@@ -1,131 +1,216 @@
 @extends('layouts.app')
 
-@section('title', 'Thêm điều kiện xét học bổng')
+@section('title', 'Thêm điểm đánh giá')
 
 @section('content')
 
-<div class="card shadow">
+<div class="container py-4">
 
-    <div class="card-header bg-primary text-white">
-        <h3 class="mb-0">
-            Thêm điều kiện xét học bổng
-        </h3>
-    </div>
+    <div class="card shadow">
 
-    <div class="card-body">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+                Thêm điểm đánh giá
+            </h3>
+        </div>
 
-        <a href="{{ route('scholarships.index') }}"
-           class="btn btn-secondary mb-3">
-            ← Quay lại danh sách học bổng
-        </a>
+        <div class="card-body">
 
-        @if($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+            <p class="text-muted">
+                Nhập kết quả chấm điểm hồ sơ
+            </p>
 
-        <form action="{{ route('eligibility-rules.store') }}"
-              method="POST">
-
-            @csrf
-
-            <div class="mb-3">
-                <label class="form-label">
-                    Chương trình học bổng
-                </label>
-
-                <select
-                    name="scholarship_program_id"
-                    class="form-select"
-                    required>
-
-                    <option value="">
-                        -- Chọn chương trình học bổng --
-                    </option>
-
-                    @foreach($scholarships as $scholarship)
-                        <option
-                            value="{{ $scholarship->id }}"
-                            {{ old('scholarship_program_id') == $scholarship->id ? 'selected' : '' }}>
-
-                            {{ $scholarship->name }}
-
-                        </option>
-                    @endforeach
-
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">
-                    GPA tối thiểu
-                </label>
-
-                <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    max="4"
-                    name="min_gpa"
-                    class="form-control"
-                    value="{{ old('min_gpa') }}"
-                    required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">
-                    Tín chỉ tối thiểu
-                </label>
-
-                <input
-                    type="number"
-                    min="1"
-                    name="min_credits"
-                    class="form-control"
-                    value="{{ old('min_credits') }}"
-                    required>
-            </div>
-
-            {{-- Hệ thống không cho phép sinh viên nợ môn --}}
-            <div class="mb-3">
-                <label class="form-label">
-                    Tình trạng nợ môn
-                </label>
-
-                <div class="alert alert-danger mb-0">
-                    <strong>Không cho phép nợ môn.</strong>
-                    Sinh viên phải hoàn thành các học phần theo yêu cầu để được xét học bổng.
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-            </div>
+            @endif
 
-            <div class="mb-3">
-                <label class="form-label">
-                    Ghi chú
-                </label>
+            <form
+                action="{{ route('evaluation-scores.store') }}"
+                method="POST"
+            >
 
-                <textarea
-                    name="note"
-                    rows="4"
-                    class="form-control">{{ old('note') }}</textarea>
-            </div>
+                @csrf
 
-            <button
-                type="submit"
-                class="btn btn-success">
-                Lưu điều kiện
-            </button>
+                {{-- Hồ sơ --}}
+                <div class="mb-3">
 
-            <a href="{{ route('eligibility-rules.index') }}"
-               class="btn btn-secondary">
-                Hủy
-            </a>
+                    <label class="form-label">
+                        Hồ sơ học bổng <span class="text-danger">*</span>
+                    </label>
 
-        </form>
+                    <select
+                        name="application_id"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            -- Chọn hồ sơ --
+                        </option>
+
+                        @foreach($applications as $application)
+
+                            <option
+                                value="{{ $application->id }}"
+                                {{ old('application_id') == $application->id ? 'selected' : '' }}
+                            >
+
+                                {{ $application->application_code }}
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+
+                {{-- Tiêu chí --}}
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Tiêu chí đánh giá <span class="text-danger">*</span>
+                    </label>
+
+                    <select
+                        name="criterion_id"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            -- Chọn tiêu chí --
+                        </option>
+
+                        @foreach($criteria as $criterion)
+
+                            <option
+                                value="{{ $criterion->id }}"
+                                {{ old('criterion_id') == $criterion->id ? 'selected' : '' }}
+                            >
+
+                                {{ $criterion->name }}
+                                - Tối đa {{ number_format($criterion->max_score, 2) }}
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+
+                {{-- Hội đồng --}}
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Hội đồng đánh giá <span class="text-danger">*</span>
+                    </label>
+
+                    <select
+                        name="committee_id"
+                        class="form-select"
+                        required
+                    >
+
+                        <option value="">
+                            -- Chọn hội đồng --
+                        </option>
+
+                        @foreach($committees as $committee)
+
+                            <option
+                                value="{{ $committee->id }}"
+                                {{ old('committee_id') == $committee->id ? 'selected' : '' }}
+                            >
+
+                                {{ $committee->name }}
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                    @if($committees->isEmpty())
+
+                        <div class="alert alert-warning mt-2">
+                            Chưa có hội đồng đánh giá.
+                            Vui lòng thêm hội đồng trước.
+                        </div>
+
+                    @endif
+
+                </div>
+
+
+                {{-- Điểm --}}
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Điểm <span class="text-danger">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        name="score"
+                        class="form-control"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        value="{{ old('score') }}"
+                        required
+                    >
+
+                    <small class="text-muted">
+                        Điểm từ 0 đến 100.
+                    </small>
+
+                </div>
+
+
+                {{-- Nhận xét --}}
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Nhận xét
+                    </label>
+
+                    <textarea
+                        name="comment"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Nhập nhận xét nếu có..."
+                    >{{ old('comment') }}</textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+                    Lưu điểm
+                </button>
+
+                <a
+                    href="{{ route('evaluation-scores.index') }}"
+                    class="btn btn-secondary"
+                >
+                    Hủy
+                </a>
+
+            </form>
+
+        </div>
 
     </div>
 

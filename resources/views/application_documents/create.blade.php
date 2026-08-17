@@ -1,72 +1,67 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Thêm minh chứng')
 
-    <title>Thêm minh chứng</title>
+@section('content')
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
+<div class="card shadow">
 
-<body>
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
-<div class="container mt-4">
+        <div>
+            <h3 class="mb-1">
+                Thêm minh chứng
+            </h3>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>Thêm minh chứng</h2>
+            <small>
+                Upload minh chứng cho hồ sơ học bổng
+            </small>
+        </div>
 
         <a
-            href="{{ route('application_documents.index') }}"
-            class="btn btn-secondary"
+            href="{{ route('application-documents.index') }}"
+            class="btn btn-light"
         >
-            Quay lại
+            ← Quay lại
         </a>
 
     </div>
 
-    @if($errors->any())
+    <div class="card-body">
 
-        <div class="alert alert-danger">
+        @if($errors->any())
 
-            <strong>Có lỗi xảy ra:</strong>
+            <div class="alert alert-danger">
 
-            <ul class="mb-0 mt-2">
+                <strong>Có lỗi xảy ra!</strong>
 
-                @foreach($errors->all() as $error)
+                <ul class="mb-0 mt-2">
 
-                    <li>{{ $error }}</li>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
 
-                @endforeach
+                </ul>
 
-            </ul>
+            </div>
 
-        </div>
+        @endif
 
-    @endif
+        <form
+            action="{{ route('application-documents.store') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
 
-    <div class="card">
+            @csrf
 
-        <div class="card-body">
+            <div class="row">
 
-            <form
-                action="{{ route('application_documents.store') }}"
-                method="POST"
-                enctype="multipart/form-data"
-            >
-
-                @csrf
-
-                {{-- Đơn đăng ký --}}
-                <div class="mb-3">
+                {{-- Hồ sơ học bổng --}}
+                <div class="col-md-6 mb-3">
 
                     <label class="form-label">
-                        Đơn đăng ký
+                        Hồ sơ học bổng
                         <span class="text-danger">*</span>
                     </label>
 
@@ -77,7 +72,7 @@
                     >
 
                         <option value="">
-                            -- Chọn đơn đăng ký --
+                            -- Chọn hồ sơ học bổng --
                         </option>
 
                         @foreach($applications as $application)
@@ -86,7 +81,13 @@
                                 value="{{ $application->id }}"
                                 {{ old('application_id') == $application->id ? 'selected' : '' }}
                             >
+
                                 {{ $application->application_code }}
+
+                                @if($application->student)
+                                    - {{ $application->student->full_name }}
+                                @endif
+
                             </option>
 
                         @endforeach
@@ -95,29 +96,108 @@
 
                 </div>
 
-
                 {{-- Loại minh chứng --}}
-                <div class="mb-3">
+                <div class="col-md-6 mb-3">
 
                     <label class="form-label">
                         Loại minh chứng
                         <span class="text-danger">*</span>
                     </label>
 
-                    <input
-                        type="text"
+                    <select
                         name="document_type"
-                        class="form-control"
-                        value="{{ old('document_type') }}"
-                        placeholder="Ví dụ: Bảng điểm"
+                        class="form-select"
                         required
                     >
 
+                        <option value="">
+                            -- Chọn loại minh chứng --
+                        </option>
+
+                        <option
+                            value="Bảng điểm"
+                            {{ old('document_type') == 'Bảng điểm' ? 'selected' : '' }}
+                        >
+                            Bảng điểm
+                        </option>
+
+                        <option
+                            value="Giấy xác nhận hoàn cảnh"
+                            {{ old('document_type') == 'Giấy xác nhận hoàn cảnh' ? 'selected' : '' }}
+                        >
+                            Giấy xác nhận hoàn cảnh
+                        </option>
+
+                        <option
+                            value="Giấy chứng nhận thành tích"
+                            {{ old('document_type') == 'Giấy chứng nhận thành tích' ? 'selected' : '' }}
+                        >
+                            Giấy chứng nhận thành tích
+                        </option>
+
+                        <option
+                            value="Chứng chỉ"
+                            {{ old('document_type') == 'Chứng chỉ' ? 'selected' : '' }}
+                        >
+                            Chứng chỉ
+                        </option>
+
+                        <option
+                            value="Khác"
+                            {{ old('document_type') == 'Khác' ? 'selected' : '' }}
+                        >
+                            Khác
+                        </option>
+
+                    </select>
+
                 </div>
 
+                {{-- Trạng thái xác minh --}}
+                <div class="col-md-6 mb-3">
 
-                {{-- Upload file --}}
-                <div class="mb-3">
+                    <label class="form-label">
+                        Trạng thái xác minh
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <select
+                        name="verification_status"
+                        class="form-select"
+                        required
+                    >
+
+                        <option
+                            value="Pending"
+                            {{ old('verification_status', 'Pending') === 'Pending' ? 'selected' : '' }}
+                        >
+                            Chờ xác minh
+                        </option>
+
+                        <option
+                            value="Approved"
+                            {{ old('verification_status') === 'Approved' ? 'selected' : '' }}
+                        >
+                            Đã xác minh
+                        </option>
+
+                        <option
+                            value="Rejected"
+                            {{ old('verification_status') === 'Rejected' ? 'selected' : '' }}
+                        >
+                            Từ chối
+                        </option>
+
+                    </select>
+
+                    <div class="form-text">
+                        Minh chứng mới mặc định ở trạng thái "Chờ xác minh".
+                    </div>
+
+                </div>
+
+                {{-- File minh chứng --}}
+                <div class="col-md-6 mb-3">
 
                     <label class="form-label">
                         File minh chứng
@@ -133,37 +213,34 @@
                     >
 
                     <div class="form-text">
-
-                        Chấp nhận:
-                        PDF, JPG, JPEG, PNG.
-                        Dung lượng tối đa 5MB.
-
+                        Chấp nhận PDF, JPG, JPEG, PNG. Dung lượng tối đa 5MB.
                     </div>
 
                 </div>
 
+            </div>
 
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                >
-                    Upload và lưu
-                </button>
+            <hr>
 
-                <a
-                    href="{{ route('application_documents.index') }}"
-                    class="btn btn-secondary"
-                >
-                    Hủy
-                </a>
+            <button
+                type="submit"
+                class="btn btn-success"
+            >
+                Upload và lưu
+            </button>
 
-            </form>
+            <a
+                href="{{ route('application-documents.index') }}"
+                class="btn btn-secondary"
+            >
+                Hủy
+            </a>
 
-        </div>
+        </form>
 
     </div>
 
 </div>
 
-</body>
-</html>
+@endsection
+

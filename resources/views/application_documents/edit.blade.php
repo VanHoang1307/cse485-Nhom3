@@ -1,74 +1,72 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
+@section('title', 'Sửa minh chứng')
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('content')
 
-    <title>Sửa minh chứng</title>
+<div class="card shadow">
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
+    <div class="card-header bg-warning d-flex justify-content-between align-items-center">
 
-<body>
+        <div>
+            <h3 class="mb-1">
+                Sửa minh chứng
+            </h3>
 
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>Sửa minh chứng</h2>
+            <small>
+                Cập nhật thông tin và file minh chứng
+            </small>
+        </div>
 
         <a
-            href="{{ route('application_documents.index') }}"
-            class="btn btn-secondary"
+            href="{{ route('application-documents.index') }}"
+            class="btn btn-light"
         >
-            Quay lại
+            ← Quay lại
         </a>
 
     </div>
 
-    @if($errors->any())
+    <div class="card-body">
 
-        <div class="alert alert-danger">
+        {{-- Thông báo lỗi --}}
+        @if($errors->any())
 
-            <ul class="mb-0">
+            <div class="alert alert-danger">
 
-                @foreach($errors->all() as $error)
+                <strong>Có lỗi xảy ra!</strong>
 
-                    <li>{{ $error }}</li>
+                <ul class="mb-0 mt-2">
 
-                @endforeach
+                    @foreach($errors->all() as $error)
 
-            </ul>
+                        <li>{{ $error }}</li>
 
-        </div>
+                    @endforeach
 
-    @endif
+                </ul>
 
-    <div class="card">
+            </div>
 
-        <div class="card-body">
+        @endif
 
-            <form
-                action="{{ route('application_documents.update', $applicationDocument) }}"
-                method="POST"
-                enctype="multipart/form-data"
-            >
+        <form
+            action="{{ route('application-documents.update', $applicationDocument) }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
 
-                @csrf
+            @csrf
+            @method('PUT')
 
-                @method('PUT')
+            <div class="row">
 
-
-                {{-- Application --}}
-                <div class="mb-3">
+                {{-- Hồ sơ học bổng --}}
+                <div class="col-md-6 mb-3">
 
                     <label class="form-label">
-                        Đơn đăng ký
+                        Hồ sơ học bổng
+                        <span class="text-danger">*</span>
                     </label>
 
                     <select
@@ -76,6 +74,10 @@
                         class="form-select"
                         required
                     >
+
+                        <option value="">
+                            -- Chọn hồ sơ học bổng --
+                        </option>
 
                         @foreach($applications as $application)
 
@@ -86,6 +88,10 @@
 
                                 {{ $application->application_code }}
 
+                                @if($application->student)
+                                    - {{ $application->student->full_name }}
+                                @endif
+
                             </option>
 
                         @endforeach
@@ -94,102 +100,187 @@
 
                 </div>
 
-
-                {{-- Document type --}}
-                <div class="mb-3">
+                {{-- Loại minh chứng --}}
+                <div class="col-md-6 mb-3">
 
                     <label class="form-label">
                         Loại minh chứng
+                        <span class="text-danger">*</span>
                     </label>
 
-                    <input
-                        type="text"
+                    <select
                         name="document_type"
-                        class="form-control"
-                        value="{{ old('document_type', $applicationDocument->document_type) }}"
+                        class="form-select"
                         required
                     >
 
-                </div>
+                        <option value="">
+                            -- Chọn loại minh chứng --
+                        </option>
 
+                        <option
+                            value="Bảng điểm"
+                            {{ old('document_type', $applicationDocument->document_type) == 'Bảng điểm' ? 'selected' : '' }}
+                        >
+                            Bảng điểm
+                        </option>
 
-                {{-- File hiện tại --}}
-                <div class="mb-3">
+                        <option
+                            value="Giấy xác nhận hoàn cảnh"
+                            {{ old('document_type', $applicationDocument->document_type) == 'Giấy xác nhận hoàn cảnh' ? 'selected' : '' }}
+                        >
+                            Giấy xác nhận hoàn cảnh
+                        </option>
 
-                    <label class="form-label">
-                        File hiện tại
-                    </label>
+                        <option
+                            value="Giấy chứng nhận thành tích"
+                            {{ old('document_type', $applicationDocument->document_type) == 'Giấy chứng nhận thành tích' ? 'selected' : '' }}
+                        >
+                            Giấy chứng nhận thành tích
+                        </option>
 
-                    <div>
+                        <option
+                            value="Chứng chỉ"
+                            {{ old('document_type', $applicationDocument->document_type) == 'Chứng chỉ' ? 'selected' : '' }}
+                        >
+                            Chứng chỉ
+                        </option>
 
-                        @if($applicationDocument->file_path)
+                        <option
+                            value="Khác"
+                            {{ old('document_type', $applicationDocument->document_type) == 'Khác' ? 'selected' : '' }}
+                        >
+                            Khác
+                        </option>
 
-                            <a
-                                href="{{ asset('storage/' . $applicationDocument->file_path) }}"
-                                target="_blank"
-                                class="btn btn-outline-primary btn-sm"
-                            >
-                                Xem file hiện tại
-                            </a>
-
-                        @else
-
-                            <span class="text-muted">
-                                Chưa có file
-                            </span>
-
-                        @endif
-
-                    </div>
-
-                </div>
-
-
-                {{-- File mới --}}
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Chọn file mới
-                    </label>
-
-                    <input
-                        type="file"
-                        name="file"
-                        class="form-control"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                    >
-
-                    <div class="form-text">
-
-                        Để trống nếu không muốn thay file.
-                        Tối đa 5MB.
-
-                    </div>
+                    </select>
 
                 </div>
 
+            </div>
 
-                <button
-                    type="submit"
-                    class="btn btn-primary"
+            {{-- File hiện tại --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+                    File hiện tại
+                </label>
+
+                <div class="border rounded p-3 bg-light">
+
+                    @if($applicationDocument->file_path)
+
+                        <div class="mb-2">
+
+                            <strong>
+                                📄 {{ $applicationDocument->document_name }}
+                            </strong>
+
+                        </div>
+
+                        <a
+                            href="{{ asset('storage/' . $applicationDocument->file_path) }}"
+                            target="_blank"
+                            class="btn btn-outline-primary btn-sm"
+                        >
+                            Xem file hiện tại
+                        </a>
+
+                    @else
+
+                        <span class="text-muted">
+                            Chưa có file
+                        </span>
+
+                    @endif
+
+                </div>
+
+            </div>
+
+            {{-- File mới --}}
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Chọn file mới
+                </label>
+
+                <input
+                    type="file"
+                    name="file"
+                    id="file"
+                    class="form-control"
+                    accept=".pdf,.jpg,.jpeg,.png"
                 >
-                    Cập nhật
-                </button>
 
-                <a
-                    href="{{ route('application_documents.index') }}"
-                    class="btn btn-secondary"
-                >
-                    Hủy
-                </a>
+                <div class="form-text">
 
-            </form>
+                    Để trống nếu không muốn thay file.
 
-        </div>
+                    Định dạng:
+                    <strong>PDF, JPG, JPEG, PNG</strong>.
+
+                    Tối đa:
+                    <strong>5MB</strong>.
+
+                </div>
+
+                <div
+                    id="fileName"
+                    class="mt-2 text-muted"
+                ></div>
+
+            </div>
+
+            <hr>
+
+            <button
+                type="submit"
+                class="btn btn-warning"
+            >
+                Cập nhật
+            </button>
+
+            <a
+                href="{{ route('application-documents.index') }}"
+                class="btn btn-secondary"
+            >
+                Hủy
+            </a>
+
+        </form>
 
     </div>
 
 </div>
 
-</body>
-</html>
+@endsection
+
+@push('scripts')
+
+<script>
+
+    const fileInput = document.getElementById('file');
+    const fileName = document.getElementById('fileName');
+
+    fileInput.addEventListener('change', function () {
+
+        if (this.files.length > 0) {
+
+            fileName.innerHTML =
+                '📄 File mới: <strong>' +
+                this.files[0].name +
+                '</strong>';
+
+        } else {
+
+            fileName.innerHTML = '';
+
+        }
+
+    });
+
+</script>
+
+@endpush
+

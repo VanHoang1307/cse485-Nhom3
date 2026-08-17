@@ -7,203 +7,305 @@
 
     <title>Chấm điểm hồ sơ</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 </head>
 
 <body>
 
 <div class="container py-4">
 
+    {{-- Tiêu đề --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h2>Chấm điểm hồ sơ</h2>
+            <h2 class="mb-1">
+                Chấm điểm hồ sơ
+            </h2>
 
             <p class="text-muted mb-0">
                 Quản lý điểm đánh giá học bổng
             </p>
         </div>
 
-        <a href="{{ route('evaluation_scores.create') }}"
-           class="btn btn-primary">
-
+        <a
+            href="{{ route('evaluation-scores.create') }}"
+            class="btn btn-primary"
+        >
             + Thêm điểm
-
         </a>
 
     </div>
 
-
+    {{-- Thông báo thành công --}}
     @if(session('success'))
 
-        <div class="alert alert-success">
+        <div class="alert alert-success alert-dismissible fade show">
+
             {{ session('success') }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+
         </div>
 
     @endif
 
+    {{-- Thông báo lỗi --}}
+    @if(session('error'))
+
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            {{ session('error') }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+
+        </div>
+
+    @endif
 
     @if($errors->any())
 
         <div class="alert alert-danger">
 
-            @foreach($errors->all() as $error)
+            <strong>Có lỗi xảy ra:</strong>
 
-                <div>
-                    {{ $error }}
-                </div>
+            <ul class="mb-0 mt-2">
 
-            @endforeach
+                @foreach($errors->all() as $error)
+
+                    <li>{{ $error }}</li>
+
+                @endforeach
+
+            </ul>
 
         </div>
 
     @endif
 
-
+    {{-- Bảng điểm --}}
     <div class="card shadow-sm">
 
-        <div class="card-body">
+        <div class="card-body p-0">
 
             @if($scores->count())
 
                 <div class="table-responsive">
 
-                    <table class="table table-bordered table-hover align-middle">
+                    <table class="table table-bordered table-hover align-middle mb-0">
 
                         <thead class="table-primary">
 
                             <tr>
 
-                                <th>STT</th>
+                                <th style="width: 60px;">
+                                    STT
+                                </th>
 
-                                <th>Hồ sơ</th>
+                                <th>
+                                    Hồ sơ
+                                </th>
 
-                                <th>Tiêu chí</th>
+                                <th>
+                                    Sinh viên
+                                </th>
 
-                                <th>Hội đồng</th>
+                                <th>
+                                    Tiêu chí
+                                </th>
 
-                                <th>Điểm</th>
+                                <th>
+                                    Hội đồng
+                                </th>
 
-                                <th>Nhận xét</th>
+                                <th style="width: 100px;">
+                                    Điểm
+                                </th>
 
-                                <th>Thao tác</th>
+                                <th>
+                                    Nhận xét
+                                </th>
+
+                                <th
+                                    style="width: 210px;"
+                                    class="text-center"
+                                >
+                                    Thao tác
+                                </th>
 
                             </tr>
 
                         </thead>
 
-
                         <tbody>
 
-                        @foreach($scores as $score)
+                            @foreach($scores as $score)
 
-                            <tr>
+                                <tr>
 
-                                <td>
-                                    {{ $scores->firstItem() + $loop->index }}
-                                </td>
+                                    {{-- STT --}}
+                                    <td>
+                                        {{ $scores->firstItem() + $loop->index }}
+                                    </td>
 
-                                <td>
+                                    {{-- Hồ sơ --}}
+                                    <td>
 
-                                    @if($score->application)
+                                        @if($score->application)
 
-                                        {{ $score->application->application_code }}
+                                            <strong>
+                                                {{ $score->application->application_code }}
+                                            </strong>
 
-                                    @else
+                                        @else
 
-                                        Không xác định
+                                            <span class="text-muted">
+                                                Không xác định
+                                            </span>
 
-                                    @endif
+                                        @endif
 
-                                </td>
+                                    </td>
 
-                                <td>
+                                    {{-- Sinh viên --}}
+                                    <td>
 
-                                    @if($score->criterion)
+                                        @if(
+                                            $score->application &&
+                                            $score->application->student
+                                        )
 
-                                        {{ $score->criterion->name }}
+                                            {{ $score->application->student->full_name }}
 
-                                    @else
+                                        @else
 
-                                        Không xác định
+                                            <span class="text-muted">
+                                                Không xác định
+                                            </span>
 
-                                    @endif
+                                        @endif
 
-                                </td>
+                                    </td>
 
-                                <td>
+                                    {{-- Tiêu chí --}}
+                                    <td>
 
-                                    @if($score->committee)
+                                        @if($score->criterion)
 
-                                        {{ $score->committee->name }}
+                                            {{ $score->criterion->name }}
 
-                                    @else
+                                        @else
 
-                                        Không xác định
+                                            <span class="text-muted">
+                                                Không xác định
+                                            </span>
 
-                                    @endif
+                                        @endif
 
-                                </td>
+                                    </td>
 
-                                <td>
+                                    {{-- Hội đồng --}}
+                                    <td>
 
-                                    <strong>
-                                        {{ $score->score }}
-                                    </strong>
+                                        @if($score->committee)
 
-                                </td>
+                                            {{ $score->committee->committee_name }}
 
-                                <td>
+                                        @else
 
-                                    {{ $score->comment ?? 'Không có' }}
+                                            <span class="text-muted">
+                                                Không xác định
+                                            </span>
 
-                                </td>
+                                        @endif
 
-                                <td>
+                                    </td>
 
-                                    <div class="d-flex gap-1">
+                                    {{-- Điểm --}}
+                                    <td>
 
-                                        <a href="{{ route('evaluation_scores.show', $score->id) }}"
-                                           class="btn btn-sm btn-info text-white">
+                                        <span class="badge bg-success fs-6">
 
-                                            Xem
+                                            {{ number_format((float) $score->score, 2) }}
 
-                                        </a>
+                                        </span>
 
+                                    </td>
 
-                                        <a href="{{ route('evaluation_scores.edit', $score->id) }}"
-                                           class="btn btn-sm btn-warning">
+                                    {{-- Nhận xét --}}
+                                    <td>
 
-                                            Sửa
+                                        @if($score->comment)
 
-                                        </a>
+                                            {{ $score->comment }}
 
+                                        @else
 
-                                        <form action="{{ route('evaluation_scores.destroy', $score->id) }}"
-                                              method="POST"
-                                              onsubmit="return confirm('Bạn có chắc muốn xóa điểm này?');">
+                                            <span class="text-muted">
+                                                Không có
+                                            </span>
 
-                                            @csrf
+                                        @endif
 
-                                            @method('DELETE')
+                                    </td>
 
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-danger">
+                                    {{-- Thao tác --}}
+                                    <td class="text-center">
 
-                                                Xóa
+                                        <div class="d-flex justify-content-center gap-1">
 
-                                            </button>
+                                            {{-- Xem --}}
+                                            <a
+                                                href="{{ route('evaluation-scores.show', $score) }}"
+                                                class="btn btn-sm btn-info text-white"
+                                            >
+                                                Xem
+                                            </a>
 
-                                        </form>
+                                            {{-- Sửa --}}
+                                            <a
+                                                href="{{ route('evaluation-scores.edit', $score) }}"
+                                                class="btn btn-sm btn-warning"
+                                            >
+                                                Sửa
+                                            </a>
 
-                                    </div>
+                                            {{-- Xóa --}}
+                                            <form
+                                                action="{{ route('evaluation-scores.destroy', $score) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('Bạn có chắc muốn xóa điểm này?');"
+                                            >
 
-                                </td>
+                                                @csrf
+                                                @method('DELETE')
 
-                            </tr>
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-sm btn-danger"
+                                                >
+                                                    Xóa
+                                                </button>
 
-                        @endforeach
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            @endforeach
 
                         </tbody>
 
@@ -211,12 +313,16 @@
 
                 </div>
 
+                {{-- Phân trang --}}
+                @if($scores->hasPages())
 
-                <div class="mt-3">
+                    <div class="d-flex justify-content-center p-3">
 
-                    {{ $scores->links() }}
+                        {{ $scores->links() }}
 
-                </div>
+                    </div>
+
+                @endif
 
             @else
 
@@ -226,11 +332,15 @@
                         Chưa có điểm đánh giá
                     </h5>
 
-                    <a href="{{ route('evaluation_scores.create') }}"
-                       class="btn btn-primary mt-2">
+                    <p class="text-muted">
+                        Hãy thêm điểm đánh giá đầu tiên cho hồ sơ.
+                    </p>
 
+                    <a
+                        href="{{ route('evaluation-scores.create') }}"
+                        class="btn btn-primary"
+                    >
                         + Thêm điểm
-
                     </a>
 
                 </div>
@@ -243,6 +353,11 @@
 
 </div>
 
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+></script>
+
 </body>
 
 </html>
+

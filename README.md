@@ -1,138 +1,478 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎓 Hệ thống quản lý học bổng
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Giới thiệu
 
-## About Laravel
+**Hệ thống quản lý học bổng** là một ứng dụng Web được xây dựng nhằm hỗ trợ nhà trường trong việc quản lý các chương trình học bổng, điều kiện xét duyệt, hồ sơ sinh viên, minh chứng, tiêu chí đánh giá, hội đồng xét duyệt, điểm đánh giá và kết quả xếp hạng.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Project được thực hiện trong khuôn khổ **Project cuối môn CSE485 – Phát triển ứng dụng Web**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Thông tin project
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# ĐỀ TÀI 15 - QUẢN LÝ HỌC BỔNG, HỖ TRỢ VÀ THÀNH TÍCH SINH VIÊN
-
-## Thông tin sinh viên
-
-- Họ tên: Nguyễn Thị Thúy Hường
-- MSSV: 2251162032
-- Module phụ trách: Module 2 - Quản lý hồ sơ xét học bổng (Application & Evaluation Management)
+| Nội dung              | Thông tin                                        |
+| --------------------- | ------------------------------------------------ |
+| Đề tài                | Quản lý học bổng, hỗ trợ và thành tích sinh viên |
+| Môn học               | CSE485 – Phát triển ứng dụng Web                 |
+| Trường                | Đại học Thủy Lợi                                 |
+| Công nghệ             | Laravel 12                                       |
+| Ngôn ngữ              | PHP 8.2+                                         |
+| Cơ sở dữ liệu         | MySQL                                            |
+| Frontend              | Blade, HTML, CSS, Bootstrap 5                    |
+| ORM                   | Laravel Eloquent                                 |
+| Môi trường phát triển | XAMPP                                            |
+| Quản lý mã nguồn      | Git / GitHub                                     |
 
 ---
 
-# Công nghệ sử dụng
+## 2. Mục tiêu hệ thống
 
-- Laravel 12
-- PHP 8.2
-- MySQL
-- Bootstrap 5
-- Visual Studio Code
-- Git & GitHub
-- MySQL Workbench / dbdiagram.io (thiết kế ERD)
+Hệ thống được xây dựng nhằm:
 
----
-
-# Cấu trúc Module
-
-Module phụ trách gồm 5 bảng:
-
-- students
-- applications
-- application_documents
-- evaluation_scores
-- ranking_results
-
-Trong giai đoạn 1 đã hoàn thành CRUD cho:
-
-- students
-- applications
+* Quản lý chương trình học bổng.
+* Quản lý điều kiện xét học bổng.
+* Quản lý thông tin sinh viên.
+* Quản lý hồ sơ đăng ký học bổng.
+* Quản lý các tài liệu/minh chứng của hồ sơ.
+* Quản lý tiêu chí chấm điểm.
+* Quản lý hội đồng xét duyệt.
+* Quản lý điểm đánh giá hồ sơ.
+* Quản lý kết quả xếp hạng học bổng.
+* Đảm bảo dữ liệu giữa các module có quan hệ và ràng buộc rõ ràng.
+* Cung cấp giao diện quản trị trực quan cho người sử dụng.
 
 ---
 
-# Quy trình thực hiện
+## 3. Chức năng chính
 
-## Bước 1. Cài đặt Laravel
+### 3.1. Quản lý học bổng
 
-Tạo project
+Quản lý các chương trình học bổng trong hệ thống.
 
-```bash
-composer create-project laravel/laravel scholarship_management
+Các chức năng:
+
+* Xem danh sách học bổng.
+* Thêm chương trình học bổng.
+* Xem chi tiết.
+* Chỉnh sửa.
+* Xóa.
+* Quản lý trạng thái chương trình.
+* Phân trang danh sách.
+
+Thông tin chính của chương trình gồm:
+
+* Tên học bổng.
+* Mô tả.
+* Mức học bổng.
+* Năm học.
+* Học kỳ.
+* Ngày bắt đầu.
+* Ngày kết thúc.
+* Trạng thái.
+
+---
+
+### 3.2. Quản lý điều kiện xét học bổng
+
+Cho phép cấu hình các điều kiện để sinh viên được xét học bổng.
+
+Các chức năng:
+
+* Xem danh sách điều kiện.
+* Thêm điều kiện.
+* Chỉnh sửa điều kiện.
+* Xóa điều kiện.
+* Liên kết điều kiện với chương trình học bổng.
+
+Các điều kiện gồm:
+
+* GPA tối thiểu.
+* Số tín chỉ tối thiểu.
+* Tình trạng nợ môn.
+* Ghi chú.
+
+---
+
+### 3.3. Quản lý sinh viên
+
+Quản lý thông tin sinh viên tham gia hệ thống.
+
+Các chức năng:
+
+* Xem danh sách sinh viên.
+* Thêm sinh viên.
+* Chỉnh sửa thông tin.
+* Xem thông tin sinh viên.
+* Xóa sinh viên.
+
+---
+
+### 3.4. Quản lý hồ sơ đăng ký học bổng
+
+Quản lý hồ sơ sinh viên đăng ký các chương trình học bổng.
+
+Các thông tin chính:
+
+* Mã hồ sơ.
+* Sinh viên.
+* Chương trình học bổng.
+* Ngày nộp.
+* Trạng thái.
+* Ghi chú.
+
+Các trạng thái hồ sơ gồm:
+
+* Pending.
+* Approved.
+* Rejected.
+
+Các chức năng:
+
+* Xem danh sách hồ sơ.
+* Thêm hồ sơ.
+* Chỉnh sửa.
+* Xem chi tiết.
+* Xóa hồ sơ.
+* Hiển thị thông tin sinh viên và chương trình học bổng thông qua Eloquent Relationship.
+
+---
+
+### 3.5. Quản lý minh chứng
+
+Quản lý các tài liệu/minh chứng được đính kèm trong hồ sơ học bổng.
+
+Minh chứng được liên kết với hồ sơ đăng ký tương ứng.
+
+Các chức năng:
+
+* Xem danh sách minh chứng.
+* Thêm minh chứng.
+* Cập nhật.
+* Xóa.
+* Liên kết minh chứng với hồ sơ.
+
+---
+
+### 3.6. Quản lý tiêu chí chấm điểm
+
+Quản lý các tiêu chí được sử dụng để đánh giá hồ sơ.
+
+Các chức năng:
+
+* Xem danh sách tiêu chí.
+* Thêm tiêu chí.
+* Chỉnh sửa.
+* Xóa.
+* Liên kết tiêu chí với chương trình học bổng.
+
+---
+
+### 3.7. Quản lý hội đồng xét duyệt
+
+Quản lý các hội đồng tham gia xét duyệt học bổng.
+
+Thông tin hội đồng gồm:
+
+* Chương trình học bổng.
+* Tên hội đồng.
+* Chủ tịch hội đồng.
+* Ngày quyết định.
+* Trạng thái.
+
+Các chức năng:
+
+* Xem danh sách hội đồng.
+* Thêm hội đồng.
+* Chỉnh sửa.
+* Xem chi tiết.
+* Xóa.
+* Liên kết hội đồng với chương trình học bổng.
+
+---
+
+### 3.8. Quản lý điểm đánh giá
+
+Quản lý điểm do hội đồng đánh giá hồ sơ.
+
+Mỗi điểm đánh giá liên kết với:
+
+* Hồ sơ học bổng.
+* Tiêu chí đánh giá.
+* Hội đồng xét duyệt.
+
+Các chức năng:
+
+* Xem danh sách điểm.
+* Thêm điểm.
+* Chỉnh sửa.
+* Xem chi tiết.
+* Xóa.
+* Kiểm tra điểm trong khoảng 0–100.
+* Kiểm tra khóa ngoại trước khi lưu.
+* Không cho phép tạo bản ghi đánh giá trùng theo ràng buộc CSDL.
+
+---
+
+### 3.9. Quản lý kết quả xếp hạng
+
+Quản lý kết quả xếp hạng các hồ sơ sau quá trình đánh giá.
+
+Kết quả xếp hạng được sử dụng để xác định thứ tự và kết quả xét học bổng của sinh viên.
+
+---
+
+## 4. Các module của hệ thống
+
+Hệ thống được chia thành các nhóm chức năng:
+
+```text
+🎓 Quản lý học bổng
+│
+├── Chương trình học bổng
+├── Điều kiện xét
+│
+👨‍🎓 Quản lý hồ sơ
+│
+├── Sinh viên
+├── Hồ sơ đăng ký
+└── Minh chứng
+│
+⭐ Đánh giá
+│
+├── Tiêu chí chấm điểm
+├── Hội đồng xét duyệt
+├── Điểm đánh giá
+└── Kết quả xếp hạng
 ```
 
-Di chuyển vào project
+Các module không hoạt động độc lập mà được liên kết thông qua khóa ngoại và Eloquent Relationship.
 
-```bash
-cd scholarship_management
+---
+
+## 5. Cơ sở dữ liệu
+
+Hệ thống sử dụng MySQL.
+
+Các bảng nghiệp vụ chính:
+
+```text
+scholarship_programs
+eligibility_rules
+students
+applications
+application_documents
+scoring_criteria
+evaluation_committees
+evaluation_scores
+ranking_results
 ```
 
-Khởi động
+### Quan hệ dữ liệu chính
 
-```bash
-php artisan serve
+```text
+Scholarship Program
+        │
+        ├── Eligibility Rules
+        │
+        ├── Applications
+        │       │
+        │       └── Application Documents
+        │
+        ├── Scoring Criteria
+        │
+        └── Evaluation Committees
+                │
+                └── Evaluation Scores
+                        │
+                        ├── Application
+                        └── Scoring Criterion
+
+Applications
+      │
+      └── Ranking Results
+```
+
+### ERD
+
+ERD của hệ thống được lưu trong repository:
+
+```text
+docs/ERD.png
+```
+
+> Nếu tên file ERD của bạn khác, hãy sửa lại đường dẫn trên cho đúng với file thực tế.
+
+---
+
+## 6. Công nghệ sử dụng
+
+### Backend
+
+* PHP 8.2+
+* Laravel 12
+* Laravel Eloquent ORM
+
+### Database
+
+* MySQL
+* Laravel Migration
+* Laravel Seeder
+
+### Frontend
+
+* Blade Template
+* HTML5
+* CSS3
+* Bootstrap 5.3
+
+### Công cụ
+
+* XAMPP
+* Composer
+* Git
+* GitHub
+* Visual Studio Code
+
+---
+
+## 7. Kiến trúc hệ thống
+
+Project sử dụng kiến trúc MVC của Laravel:
+
+```text
+User
+ │
+ ▼
+Route
+ │
+ ▼
+Controller
+ │
+ ▼
+Model / Eloquent
+ │
+ ▼
+MySQL Database
+ │
+ ▼
+Controller
+ │
+ ▼
+Blade View
+ │
+ ▼
+User
+```
+
+### Route
+
+Route xác định URL và Controller/action tương ứng.
+
+Ví dụ:
+
+```php
+Route::resource(
+    'evaluation-scores',
+    EvaluationScoreController::class
+);
+```
+
+### Controller
+
+Controller tiếp nhận Request, validation và gọi Model để xử lý dữ liệu.
+
+Ví dụ:
+
+```text
+EvaluationScoreController
+```
+
+### Model
+
+Model sử dụng Eloquent để thao tác với database và định nghĩa relationship.
+
+Ví dụ:
+
+```text
+EvaluationScore
+EvaluationCommittee
+ScoringCriterion
+Application
+```
+
+### View
+
+Giao diện được xây dựng bằng Blade.
+
+Ví dụ:
+
+```text
+resources/views/
+├── scholarships/
+├── eligibility_rules/
+├── students/
+├── applications/
+├── application_documents/
+├── scoring_criteria/
+├── evaluation_committees/
+├── evaluation_scores/
+└── ranking_results/
 ```
 
 ---
 
-# Bước 2. Cấu hình Database
+## 8. Validation và toàn vẹn dữ liệu
 
-Tạo database
+Hệ thống thực hiện validation ở backend bằng Laravel Validation.
+
+Ví dụ đối với điểm đánh giá:
+
+```php
+'score' => [
+    'required',
+    'numeric',
+    'min:0',
+    'max:100'
+],
+```
+
+Các khóa ngoại sử dụng quy tắc `exists` để đảm bảo dữ liệu liên kết tồn tại.
+
+Ví dụ:
+
+```php
+'application_id' => [
+    'required',
+    'exists:applications,id'
+],
+```
+
+Ngoài validation ở Controller, database cũng sử dụng:
+
+* Primary Key.
+* Foreign Key.
+* Unique Constraint.
+* Nullable hợp lý.
+* Enum/kiểu dữ liệu phù hợp.
+* Cascade Delete đối với các quan hệ phù hợp.
+
+---
+
+## 9. Migration và Seeder
+
+Database được xây dựng bằng Laravel Migration.
+
+Các migration đảm bảo database có thể được dựng lại trên một máy mới.
+
+Dữ liệu demo được tạo bằng Seeder.
+
+### Tạo database
+
+Tạo database MySQL:
 
 ```sql
 CREATE DATABASE scholarship_management;
 ```
 
-Chỉnh file
-
-```
-.env
-```
+Sau đó cấu hình file `.env`:
 
 ```env
 DB_CONNECTION=mysql
@@ -143,356 +483,375 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
----
-
-# Bước 3. Thiết kế CSDL
-
-Phân tích yêu cầu Module 2.
-
-Thiết kế 5 bảng
-
-- students
-- applications
-- application_documents
-- evaluation_scores
-- ranking_results
-
-Xác định
-
-- Primary Key
-- Foreign Key
-- Quan hệ 1-N
-- Quan hệ 1-1
-
-Sau đó vẽ ERD bằng
-
-- dbdiagram.io
-hoặc
-- MySQL Workbench
+> Không commit file `.env` lên GitHub.
 
 ---
 
-# Bước 4. Tạo Migration
+## 10. Cài đặt project
 
-Sinh Migration
+### Bước 1: Clone repository
 
 ```bash
-php artisan make:migration create_students_table
-
-php artisan make:migration create_applications_table
-
-php artisan make:migration create_application_documents_table
-
-php artisan make:migration create_evaluation_scores_table
-
-php artisan make:migration create_ranking_results_table
+git clone <LINK_GITHUB_CUA_BAN>
 ```
 
-Viết cấu trúc bảng.
-
-Khai báo
-
-- Primary Key
-- Foreign Key
-- Unique
-- Cascade Delete
-
----
-
-# Bước 5. Chạy Migration
+Di chuyển vào thư mục project:
 
 ```bash
-php artisan migrate
+cd scholarship-management
 ```
 
-Nếu cần chạy lại
+### Bước 2: Cài đặt Composer
 
 ```bash
-php artisan migrate:fresh
+composer install
 ```
 
----
+### Bước 3: Tạo file `.env`
 
-# Bước 6. Tạo Model
-
-Sinh Model
+Windows:
 
 ```bash
-php artisan make:model Student
-
-php artisan make:model Application
-
-php artisan make:model ApplicationDocument
-
-php artisan make:model EvaluationScore
-
-php artisan make:model RankingResult
+copy .env.example .env
 ```
 
-Khai báo
-
-```php
-protected $fillable=[]
-```
-
-Viết Relationship.
-
-Ví dụ
-
-Student
-
-```php
-public function applications()
-{
-    return $this->hasMany(Application::class);
-}
-```
-
-Application
-
-```php
-public function student()
-{
-    return $this->belongsTo(Student::class);
-}
-```
-
----
-
-# Bước 7. Kiểm tra Relationship
-
-Mở
+Linux/macOS:
 
 ```bash
-php artisan tinker
+cp .env.example .env
 ```
 
-Kiểm tra
-
-```php
-App\Models\Student::first();
-
-App\Models\Application::first();
-```
-
----
-
-# Bước 8. Tạo Seeder
-
-Sinh Seeder
+### Bước 4: Tạo Application Key
 
 ```bash
-php artisan make:seeder StudentSeeder
-
-php artisan make:seeder ApplicationSeeder
+php artisan key:generate
 ```
 
-Thêm dữ liệu mẫu.
+### Bước 5: Cấu hình database
 
-Chạy
+Mở file:
+
+```text
+.env
+```
+
+Thiết lập:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=scholarship_management
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### Bước 6: Chạy Migration và Seeder
 
 ```bash
-php artisan db:seed
+php artisan migrate:fresh --seed
 ```
 
----
+Lệnh trên sẽ:
 
-# Bước 9. Tạo Controller
+1. Xóa các bảng cũ.
+2. Tạo lại database structure.
+3. Chạy các migration.
+4. Chạy Seeder.
+5. Tạo dữ liệu demo.
 
-Sinh Controller
+### Bước 7: Chạy Laravel
 
 ```bash
-php artisan make:controller StudentController
+php artisan serve
+```
 
-php artisan make:controller ApplicationController
+Truy cập:
+
+```text
+http://127.0.0.1:8000
 ```
 
 ---
 
-# Bước 10. Khai báo Route
+## 11. Các URL chính
 
-```php
-Route::resource('students', StudentController::class);
+| Chức năng          | URL                      |
+| ------------------ | ------------------------ |
+| Tổng quan          | `/`                      |
+| Học bổng           | `/scholarships`          |
+| Điều kiện xét      | `/eligibility-rules`     |
+| Sinh viên          | `/students`              |
+| Hồ sơ đăng ký      | `/applications`          |
+| Minh chứng         | `/application-documents` |
+| Tiêu chí chấm điểm | `/scoring-criteria`      |
+| Hội đồng xét duyệt | `/evaluation-committees` |
+| Điểm đánh giá      | `/evaluation-scores`     |
+| Kết quả xếp hạng   | `/ranking-results`       |
 
-Route::resource('applications', ApplicationController::class);
+---
+
+## 12. Các yêu cầu an toàn
+
+Project thực hiện các nguyên tắc:
+
+* Sử dụng CSRF Token cho form.
+* Không xóa dữ liệu bằng GET.
+* Sử dụng POST/DELETE cho thao tác xóa.
+* Validation dữ liệu ở backend.
+* Sử dụng Eloquent thay vì nối chuỗi SQL trực tiếp.
+* Kiểm tra `exists` đối với khóa ngoại.
+* Sử dụng `$fillable` trong Model.
+* Escape dữ liệu khi hiển thị trong Blade.
+* Không commit `.env`.
+* Không commit password/token thật.
+* Database sử dụng Foreign Key và Unique Constraint để đảm bảo toàn vẹn dữ liệu.
+
+---
+
+## 13. Kiểm thử
+
+Các chức năng chính được kiểm tra theo các trường hợp:
+
+### Create
+
+* Nhập dữ liệu hợp lệ.
+* Bỏ trống trường bắt buộc.
+* Nhập sai kiểu dữ liệu.
+* Nhập khóa ngoại không tồn tại.
+* Nhập dữ liệu bị trùng.
+
+### Update
+
+* Cập nhật dữ liệu hợp lệ.
+* Kiểm tra validation.
+* Kiểm tra relationship.
+* Kiểm tra unique constraint.
+
+### Delete
+
+* Xóa bản ghi không có dữ liệu phụ thuộc.
+* Kiểm tra trường hợp bản ghi đang được sử dụng bởi bảng khác.
+* Sử dụng phương thức HTTP phù hợp.
+
+### Relationship
+
+Kiểm tra dữ liệu liên kết được hiển thị bằng tên thay vì chỉ hiển thị ID.
+
+Ví dụ:
+
+```text
+Hồ sơ → Sinh viên
+Hồ sơ → Chương trình học bổng
+Điểm → Tiêu chí
+Điểm → Hội đồng
+Điểm → Hồ sơ
 ```
 
-Kiểm tra
+---
+
+## 14. Dữ liệu demo
+
+Project có dữ liệu demo cho các module để phục vụ việc:
+
+* Kiểm thử CRUD.
+* Kiểm tra relationship.
+* Kiểm tra validation.
+* Demo hệ thống.
+* Kiểm tra xếp hạng và đánh giá.
+
+Sau khi chạy:
 
 ```bash
-php artisan route:list
+php artisan migrate:fresh --seed
+```
+
+database sẽ được tạo lại cùng dữ liệu demo.
+
+---
+
+## 15. Cấu trúc thư mục chính
+
+```text
+scholarship-management/
+│
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │
+│   └── Models/
+│
+├── database/
+│   ├── migrations/
+│   └── seeders/
+│
+├── resources/
+│   └── views/
+│
+├── routes/
+│   └── web.php
+│
+├── public/
+│
+├── docs/
+│   └── ERD.png
+│
+├── .env.example
+├── composer.json
+└── README.md
 ```
 
 ---
 
-# Bước 11. Xây dựng CRUD Students
+## 16. Phân công thành viên
 
-Đã hoàn thành
+### Thành viên 1 — Nguyễn Văn Hoàng
 
-✔ Danh sách sinh viên
+Phụ trách:
 
-✔ Thêm sinh viên
+* Quản lý chương trình học bổng.
+* Quản lý điều kiện xét học bổng.
+* Quản lý tiêu chí chấm điểm.
+* Quản lý hội đồng xét duyệt.
+* Quản lý điểm đánh giá.
+* Tích hợp các module đánh giá.
+* Migration, Model, Controller, Blade và Seeder của các module được phân công.
 
-✔ Sửa sinh viên
+### Thành viên 2 — Nguyễn Thị Thúy Hường
 
-✔ Xóa sinh viên
+Phụ trách:
 
-Các View
+* Quản lý sinh viên.
+* Quản lý hồ sơ đăng ký.
+* Quản lý minh chứng.
+* Quản lý kết quả xếp hạng.
+* Tích hợp module hồ sơ với module học bổng.
+* Migration, Model, Controller, Blade và Seeder của các module được phân công.
 
+> Cập nhật lại bảng phân công nếu project thực tế có sự thay đổi.
+
+---
+
+## 17. Git và quản lý mã nguồn
+
+Project được quản lý bằng Git và GitHub.
+
+Quy trình làm việc:
+
+```text
+Tạo branch
+    ↓
+Phát triển chức năng
+    ↓
+Test
+    ↓
+Commit
+    ↓
+Push
+    ↓
+Review / Merge
 ```
-students/index.blade.php
 
-students/create.blade.php
+Commit nên mô tả rõ nội dung thay đổi.
 
-students/edit.blade.php
+Ví dụ:
+
+```text
+feat: add scholarship program CRUD
+feat: add evaluation committee module
+feat: add evaluation score validation
+fix: fix evaluation committee display
+fix: handle duplicate evaluation score
+```
+
+Không commit:
+
+```text
+.env
+/vendor
+node_modules
+file tạm
+credential thật
+password/token
 ```
 
 ---
 
-# Bước 12. Xây dựng CRUD Applications
+## 18. Hướng phát triển
 
-Đã hoàn thành
+Các chức năng có thể mở rộng trong tương lai:
 
-✔ Danh sách hồ sơ
+* Authentication.
+* Phân quyền Admin / Sinh viên / Hội đồng.
+* Middleware và Policy.
+* Upload và quản lý file nâng cao.
+* Tự động tính tổng điểm theo trọng số.
+* Tự động xếp hạng theo tổng điểm.
+* Kiểm tra ngân sách học bổng.
+* Quản lý chi trả học bổng.
+* Xuất báo cáo.
+* Dashboard thống kê nâng cao.
+* Gửi thông báo cho sinh viên.
 
-✔ Thêm hồ sơ
-
-✔ Sửa hồ sơ
-
-✔ Xóa hồ sơ
-
-Các View
-
-```
-applications/index.blade.php
-
-applications/create.blade.php
-
-applications/edit.blade.php
-```
+Các chức năng mở rộng không thay thế các chức năng CRUD và validation cốt lõi.
 
 ---
 
-# Bước 13. Validation
+## 19. Kết luận
 
-Sử dụng
+Hệ thống **Quản lý học bổng** được xây dựng trên Laravel theo kiến trúc MVC, sử dụng Migration, Seeder, Eloquent Relationship, Controller và Blade.
 
-```php
-$request->validate([
-...
-]);
+Hệ thống tập trung vào quy trình:
+
+```text
+Chương trình học bổng
+        ↓
+Điều kiện xét
+        ↓
+Sinh viên
+        ↓
+Hồ sơ đăng ký
+        ↓
+Minh chứng
+        ↓
+Tiêu chí + Hội đồng
+        ↓
+Điểm đánh giá
+        ↓
+Kết quả xếp hạng
 ```
 
-Kiểm tra
+Project đáp ứng các yêu cầu về:
 
-- Required
-- Email
-- Unique
-- Numeric
-- Date
-
----
-
-# Bước 14. Giao diện
-
-Sử dụng
-
-Bootstrap 5
-
-Bao gồm
-
-- Card
-- Table
-- Alert
-- Button
-- Form
-- Confirm Delete
+* Thiết kế cơ sở dữ liệu.
+* PK/FK và constraint.
+* Migration và Seeder.
+* Eloquent Model và Relationship.
+* CRUD.
+* Backend Validation.
+* CSRF.
+* Giao diện Blade + Bootstrap.
+* Git/GitHub.
+* Dữ liệu demo.
+* ERD.
+* Tài liệu hướng dẫn cài đặt và sử dụng.
 
 ---
 
-# Bước 15. Dữ liệu MySQL
+## 20. Tác giả
 
-Sau khi chạy
+**Nguyễn Văn Hoàng**
+Sinh viên Khoa Công nghệ thông tin
+Trường Đại học Thủy Lợi
 
-```bash
-php artisan migrate
-```
-
-Laravel tự động tạo các bảng trong MySQL.
-
-Không cần tự viết SQL CREATE TABLE bằng tay.
-
-Có thể xem dữ liệu trong
-
-phpMyAdmin
-
-hoặc
-
-MySQL Workbench.
+**Nguyễn Thị Thúy Hường**
+Sinh viên Khoa Công nghệ thông tin
+Trường Đại học Thủy Lợi
 
 ---
 
-# Cấu trúc thư mục
+## 📌 Ghi chú
 
-```
-app
- ├── Models
- │      Student.php
- │      Application.php
- │      ApplicationDocument.php
- │      EvaluationScore.php
- │      RankingResult.php
+Đây là project phục vụ mục đích học tập trong môn **CSE485 – Phát triển ứng dụng Web**.
 
-app
- └── Http
-        Controllers
-            StudentController.php
-            ApplicationController.php
-
-database
- ├── migrations
- └── seeders
-
-resources
- └── views
-        students
-        applications
-
-routes
-     web.php
-```
-
----
-
-# Chức năng đã hoàn thành
-
-## Students
-
-- CRUD
-- Validation
-- Relationship
-- Migration
-- Seeder
-
-## Applications
-
-- CRUD
-- Validation
-- Relationship
-- Migration
-- Seeder
-
----
-
-# Chức năng sẽ tiếp tục phát triển
-
-- CRUD Application Documents
-- Upload minh chứng
-- CRUD Evaluation Scores
-- Chấm điểm học bổng
-- CRUD Ranking Results
-- Xếp hạng sinh viên
-- Tích hợp Module 1
-- Dashboard
-- Authentication
-- Phân quyền
+Không sử dụng dữ liệu cá nhân, mật khẩu hoặc credential thật trong repository.

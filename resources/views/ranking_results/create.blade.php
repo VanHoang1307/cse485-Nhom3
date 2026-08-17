@@ -1,21 +1,15 @@
-@extends('layouts.admin')
-
-@section('title', 'Thêm kết quả xếp hạng')
-
-@section('page_heading', 'Thêm kết quả xếp hạng')
+@extends('layouts.app')
 
 @section('content')
 
-<div class="container-fluid">
+<div class="container py-4">
 
-    <div class="card">
+    <div class="card shadow-sm">
 
         <div class="card-header">
-
-            <h4>
+            <h4 class="mb-0">
                 Thêm kết quả xếp hạng
             </h4>
-
         </div>
 
         <div class="card-body">
@@ -24,13 +18,13 @@
 
                 <div class="alert alert-danger">
 
-                    <ul class="mb-0">
+                    <strong>Có lỗi xảy ra:</strong>
+
+                    <ul class="mb-0 mt-2">
 
                         @foreach($errors->all() as $error)
 
-                            <li>
-                                {{ $error }}
-                            </li>
+                            <li>{{ $error }}</li>
 
                         @endforeach
 
@@ -41,7 +35,7 @@
             @endif
 
             <form
-                action="{{ route('ranking_results.store') }}"
+                action="{{ route('ranking-results.store') }}"
                 method="POST"
             >
 
@@ -51,6 +45,7 @@
 
                     <label class="form-label">
                         Hồ sơ ứng tuyển
+                        <span class="text-danger">*</span>
                     </label>
 
                     <select
@@ -74,8 +69,7 @@
 
                                 @if($application->student)
 
-                                    -
-                                    {{ $application->student->full_name }}
+                                    - {{ $application->student->full_name }}
 
                                 @endif
 
@@ -91,6 +85,7 @@
 
                     <label class="form-label">
                         Tổng điểm
+                        <span class="text-danger">*</span>
                     </label>
 
                     <input
@@ -104,9 +99,18 @@
                         required
                     >
 
-                    <small class="text-muted">
-                        Nhập tổng điểm từ 0 đến 100.
-                    </small>
+                    <div class="form-text">
+                        Tổng điểm từ 0 đến 100.
+                    </div>
+
+                </div>
+
+                <div class="alert alert-info">
+
+                    <strong>Lưu ý:</strong>
+
+                    Thứ hạng sẽ được hệ thống tự động tính
+                    dựa trên tổng điểm.
 
                 </div>
 
@@ -120,7 +124,7 @@
                     </button>
 
                     <a
-                        href="{{ route('ranking_results.index') }}"
+                        href="{{ route('ranking-results.index') }}"
                         class="btn btn-secondary"
                     >
                         Quay lại

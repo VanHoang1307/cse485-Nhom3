@@ -1,3 +1,4 @@
+```php
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -6,9 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('application_documents', function (Blueprint $table) {
@@ -22,14 +20,14 @@ return new class extends Migration
             // Tên minh chứng
             $table->string('document_name');
 
+            // Loại minh chứng
+            $table->string('document_type');
+
             // Đường dẫn file
             $table->string('file_path');
 
-            // Ngày upload
-            $table->date('upload_date')->nullable();
-
-            // Trạng thái minh chứng
-            $table->enum('status', [
+            // Trạng thái xác minh
+            $table->enum('verification_status', [
                 'Pending',
                 'Approved',
                 'Rejected'
@@ -39,11 +37,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('application_documents');
     }
 };
+

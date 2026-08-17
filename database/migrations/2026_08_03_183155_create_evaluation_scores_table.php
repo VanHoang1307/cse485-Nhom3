@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('evaluation_scores', function (Blueprint $table) {
@@ -19,13 +16,15 @@ return new class extends Migration
                 ->constrained('applications')
                 ->cascadeOnDelete();
 
-            // ID tiêu chí chấm điểm
-            // Bảng scoring_criteria do Module 1 phụ trách
-            $table->unsignedBigInteger('criterion_id');
+            // Tiêu chí chấm điểm
+            $table->foreignId('criterion_id')
+                ->constrained('scoring_criteria')
+                ->cascadeOnDelete();
 
-            // ID hội đồng/người chấm
-            // Bảng evaluation_committees do Module 1 phụ trách
-            $table->unsignedBigInteger('committee_id');
+            // Hội đồng/người chấm
+            $table->foreignId('committee_id')
+                ->constrained('evaluation_committees')
+                ->cascadeOnDelete();
 
             // Điểm
             $table->decimal('score', 5, 2);
@@ -35,10 +34,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            /*
-             * Một hồ sơ + một tiêu chí + một hội đồng
-             * chỉ được có một bản ghi điểm.
-             */
+            // Một hồ sơ + một tiêu chí + một hội đồng
+            // chỉ được có một bản ghi điểm
             $table->unique(
                 [
                     'application_id',
@@ -50,11 +47,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('evaluation_scores');
     }
 };
+

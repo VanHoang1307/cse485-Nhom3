@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.dashboard')
 
 @section('title', 'Chi tiết xếp hạng')
 
@@ -8,14 +8,12 @@
 
 <div class="container-fluid">
 
-    <div class="card">
+    <div class="card shadow-sm">
 
         <div class="card-header">
-
-            <h4>
+            <h4 class="mb-0">
                 Chi tiết kết quả xếp hạng
             </h4>
-
         </div>
 
         <div class="card-body">
@@ -23,104 +21,84 @@
             <table class="table table-bordered">
 
                 <tr>
-                    <th width="250">
-                        ID
-                    </th>
-
-                    <td>
-                        {{ $rankingResult->id }}
-                    </td>
+                    <th width="250">ID</th>
+                    <td>{{ $rankingResult->id }}</td>
                 </tr>
 
                 <tr>
-
-                    <th>
-                        Mã hồ sơ
-                    </th>
-
+                    <th>Mã hồ sơ</th>
                     <td>
-
                         @if($rankingResult->application)
-
                             {{ $rankingResult->application->application_code }}
-
                         @else
-
-                            Không xác định
-
+                            <span class="text-muted">
+                                Không xác định
+                            </span>
                         @endif
-
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <th>
-                        Sinh viên
-                    </th>
-
+                    <th>Sinh viên</th>
                     <td>
-
                         @if(
                             $rankingResult->application &&
                             $rankingResult->application->student
                         )
-
                             {{ $rankingResult->application->student->full_name }}
-
                         @else
-
-                            Không xác định
-
+                            <span class="text-muted">
+                                Không xác định
+                            </span>
                         @endif
-
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <th>
-                        Tổng điểm
-                    </th>
-
+                    <th>Tổng điểm</th>
                     <td>
-
                         <strong>
                             {{ number_format($rankingResult->total_score, 2) }}
                         </strong>
-
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <th>
-                        Thứ hạng
-                    </th>
-
+                    <th>Thứ hạng</th>
                     <td>
-
                         <strong>
-                            Hạng {{ $rankingResult->rank }}
+                            Hạng {{ $rankingResult->ranking }}
                         </strong>
-
                     </td>
-
                 </tr>
 
                 <tr>
-
-                    <th>
-                        Ngày tạo
-                    </th>
-
+                    <th>Kết quả</th>
                     <td>
-                        {{ $rankingResult->created_at }}
+                        @if($rankingResult->result === 'Qualified')
+                            <span class="badge bg-success">
+                                Đủ điều kiện
+                            </span>
+                        @else
+                            <span class="badge bg-danger">
+                                Không đạt
+                            </span>
+                        @endif
                     </td>
+                </tr>
 
+                <tr>
+                    <th>Ngày tạo</th>
+                    <td>
+                        {{ $rankingResult->created_at?->format('d/m/Y H:i') }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Cập nhật lần cuối</th>
+                    <td>
+                        {{ $rankingResult->updated_at?->format('d/m/Y H:i') }}
+                    </td>
                 </tr>
 
             </table>
@@ -128,14 +106,14 @@
             <div class="mt-3">
 
                 <a
-                    href="{{ route('ranking_results.edit', $rankingResult) }}"
+                    href="{{ route('ranking-results.edit', $rankingResult) }}"
                     class="btn btn-warning"
                 >
                     Sửa
                 </a>
 
                 <a
-                    href="{{ route('ranking_results.index') }}"
+                    href="{{ route('ranking-results.index') }}"
                     class="btn btn-secondary"
                 >
                     Quay lại

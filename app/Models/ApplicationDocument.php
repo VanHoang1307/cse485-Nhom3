@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class ApplicationDocument extends Model
 {
@@ -16,6 +16,7 @@ class ApplicationDocument extends Model
         'document_name',
         'document_type',
         'file_path',
+        'verification_status',
     ];
 
     public function application()
@@ -23,3 +24,4 @@ class ApplicationDocument extends Model
         return $this->belongsTo(Application::class);
     }
 }
+

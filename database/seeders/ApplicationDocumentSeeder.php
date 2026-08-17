@@ -31,3 +31,4 @@ class ApplicationDocumentSeeder extends Seeder
         }
     }
 }
+

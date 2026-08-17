@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.dashboard')
 
 @section('title', 'Sửa kết quả xếp hạng')
 
@@ -8,14 +8,12 @@
 
 <div class="container-fluid">
 
-    <div class="card">
+    <div class="card shadow-sm">
 
         <div class="card-header">
-
-            <h4>
+            <h4 class="mb-0">
                 Sửa kết quả xếp hạng
             </h4>
-
         </div>
 
         <div class="card-body">
@@ -24,7 +22,9 @@
 
                 <div class="alert alert-danger">
 
-                    <ul class="mb-0">
+                    <strong>Có lỗi xảy ra:</strong>
+
+                    <ul class="mb-0 mt-2">
 
                         @foreach($errors->all() as $error)
 
@@ -41,7 +41,7 @@
             @endif
 
             <form
-                action="{{ route('ranking_results.update', $rankingResult) }}"
+                action="{{ route('ranking-results.update', $rankingResult) }}"
                 method="POST"
             >
 
@@ -49,10 +49,12 @@
 
                 @method('PUT')
 
+                {{-- Hồ sơ ứng tuyển --}}
                 <div class="mb-3">
 
                     <label class="form-label">
                         Hồ sơ ứng tuyển
+                        <span class="text-danger">*</span>
                     </label>
 
                     <select
@@ -69,15 +71,17 @@
 
                             <option
                                 value="{{ $application->id }}"
-                                {{ old('application_id', $rankingResult->application_id) == $application->id ? 'selected' : '' }}
+                                {{ old(
+                                    'application_id',
+                                    $rankingResult->application_id
+                                ) == $application->id ? 'selected' : '' }}
                             >
 
                                 {{ $application->application_code }}
 
                                 @if($application->student)
 
-                                    -
-                                    {{ $application->student->full_name }}
+                                    - {{ $application->student->full_name }}
 
                                 @endif
 
@@ -89,10 +93,12 @@
 
                 </div>
 
+                {{-- Tổng điểm --}}
                 <div class="mb-3">
 
                     <label class="form-label">
                         Tổng điểm
+                        <span class="text-danger">*</span>
                     </label>
 
                     <input
@@ -102,19 +108,30 @@
                         min="0"
                         max="100"
                         step="0.01"
-                        value="{{ old('total_score', $rankingResult->total_score) }}"
+                        value="{{ old(
+                            'total_score',
+                            $rankingResult->total_score
+                        ) }}"
                         required
                     >
 
+                    <div class="form-text">
+                        Tổng điểm từ 0 đến 100.
+                    </div>
+
                 </div>
 
+                {{-- Thông báo --}}
                 <div class="alert alert-info">
+
+                    <strong>Lưu ý:</strong>
 
                     Thứ hạng sẽ được hệ thống tự động tính lại
                     dựa trên tổng điểm.
 
                 </div>
 
+                {{-- Nút --}}
                 <div class="d-flex gap-2">
 
                     <button
@@ -125,7 +142,7 @@
                     </button>
 
                     <a
-                        href="{{ route('ranking_results.index') }}"
+                        href="{{ route('ranking-results.index') }}"
                         class="btn btn-secondary"
                     >
                         Quay lại

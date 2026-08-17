@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RankingResult;
 use App\Models\Application;
+use App\Models\RankingResult;
 use Illuminate\Http\Request;
 
 class RankingResultController extends Controller
@@ -14,7 +14,7 @@ class RankingResultController extends Controller
     public function index()
     {
         $results = RankingResult::with('application')
-            ->orderBy('rank')
+            ->orderBy('ranking')
             ->paginate(10);
 
         return view(
@@ -29,7 +29,7 @@ class RankingResultController extends Controller
     public function create()
     {
         $applications = Application::with('student')
-            ->orderBy('id', 'desc')
+            ->latest()
             ->get();
 
         return view(
@@ -44,45 +44,81 @@ class RankingResultController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'application_id' => 'required|exists:applications,id',
-            'total_score' => 'required|numeric|min:0|max:100',
+            'application_id' => [
+                'required',
+                'exists:applications,id',
+                'unique:ranking_results,application_id'
+            ],
+
+            'total_score' => [
+                'required',
+                'numeric',
+                'min:0',
+                'max:100'
+            ],
+        ], [
+            'application_id.required' => 'Vui lòng chọn hồ sơ.',
+
+            'application_id.exists' => 'Hồ sơ không tồn tại.',
+
+            'application_id.unique' => 'Hồ sơ này đã có kết quả xếp hạng.',
+
+            'total_score.required' => 'Vui lòng nhập tổng điểm.',
+
+            'total_score.numeric' => 'Tổng điểm phải là số.',
+
+            'total_score.min' => 'Tổng điểm không được nhỏ hơn 0.',
+
+            'total_score.max' => 'Tổng điểm không được lớn hơn 100.',
         ]);
 
-        // Kiểm tra hồ sơ đã có kết quả xếp hạng chưa
-        $exists = RankingResult::where(
-            'application_id',
-            $validated['application_id']
-        )->exists();
+        /*
+         * Tạm thời để ranking = 0.
+         * Sau khi thêm bản ghi sẽ tính lại toàn bộ.
+         */
+        $validated['ranking'] = 0;
+        $validated['result'] = 'Not Qualified';
 
-        if ($exists) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'application_id' =>
-                        'Hồ sơ này đã có kết quả xếp hạng.'
-                ]);
-        }
+        RankingResult::create($validated);
 
-        // Tạo kết quả
-        RankingResult::create([
-            'application_id' => $validated['application_id'],
-            'total_score' => $validated['total_score'],
-            'rank' => 0,
-        ]);
-
-        // Cập nhật lại toàn bộ thứ hạng
-        $this->recalculateRanks();
+        /*
+         * Tính lại thứ hạng cho toàn bộ kết quả.
+         */
+        $this->recalculateRankings();
 
         return redirect()
-            ->route('ranking_results.index')
+            ->route('ranking-results.index')
             ->with(
                 'success',
-                'Đã thêm kết quả và cập nhật thứ hạng thành công.'
+                'Thêm kết quả xếp hạng thành công!'
             );
     }
 
     /**
-     * Xem chi tiết kết quả
+     * Tính lại toàn bộ thứ hạng
+     */
+    private function recalculateRankings()
+    {
+        $results = RankingResult::orderByDesc('total_score')
+            ->orderBy('id')
+            ->get();
+
+        foreach ($results as $index => $result) {
+
+            $ranking = $index + 1;
+
+            $result->update([
+                'ranking' => $ranking,
+
+                'result' => $ranking <= 10
+                    ? 'Qualified'
+                    : 'Not Qualified',
+            ]);
+        }
+    }
+
+    /**
+     * Xem chi tiết
      */
     public function show(RankingResult $rankingResult)
     {
@@ -97,12 +133,12 @@ class RankingResultController extends Controller
     }
 
     /**
-     * Form sửa kết quả
+     * Form sửa
      */
     public function edit(RankingResult $rankingResult)
     {
         $applications = Application::with('student')
-            ->orderBy('id', 'desc')
+            ->latest()
             ->get();
 
         return view(
@@ -115,97 +151,76 @@ class RankingResultController extends Controller
     }
 
     /**
-     * Cập nhật kết quả
+     * Cập nhật kết quả xếp hạng
      */
     public function update(
         Request $request,
         RankingResult $rankingResult
     ) {
         $validated = $request->validate([
-            'application_id' =>
-                'required|exists:applications,id',
+            'application_id' => [
+                'required',
+                'exists:applications,id',
+                'unique:ranking_results,application_id,' . $rankingResult->id
+            ],
 
-            'total_score' =>
-                'required|numeric|min:0|max:100',
+            'total_score' => [
+                'required',
+                'numeric',
+                'min:0',
+                'max:100'
+            ],
+        ], [
+            'application_id.required' => 'Vui lòng chọn hồ sơ.',
+
+            'application_id.exists' => 'Hồ sơ không tồn tại.',
+
+            'application_id.unique' => 'Hồ sơ này đã có kết quả xếp hạng.',
+
+            'total_score.required' => 'Vui lòng nhập tổng điểm.',
+
+            'total_score.numeric' => 'Tổng điểm phải là số.',
+
+            'total_score.min' => 'Tổng điểm không được nhỏ hơn 0.',
+
+            'total_score.max' => 'Tổng điểm không được lớn hơn 100.',
         ]);
 
-        $exists = RankingResult::where(
-            'application_id',
-            $validated['application_id']
-        )
-            ->where(
-                'id',
-                '!=',
-                $rankingResult->id
-            )
-            ->exists();
+        $rankingResult->update($validated);
 
-        if ($exists) {
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'application_id' =>
-                        'Hồ sơ này đã có kết quả xếp hạng.'
-                ]);
-        }
-
-        $rankingResult->update([
-            'application_id' =>
-                $validated['application_id'],
-
-            'total_score' =>
-                $validated['total_score'],
-        ]);
-
-        // Tính lại thứ hạng
-        $this->recalculateRanks();
+        /*
+         * Sau khi sửa điểm,
+         * tính lại toàn bộ thứ hạng.
+         */
+        $this->recalculateRankings();
 
         return redirect()
-            ->route('ranking_results.index')
+            ->route('ranking-results.index')
             ->with(
                 'success',
-                'Đã cập nhật kết quả xếp hạng.'
+                'Cập nhật kết quả xếp hạng thành công!'
             );
     }
 
     /**
-     * Xóa kết quả
+     * Xóa kết quả xếp hạng
      */
     public function destroy(
         RankingResult $rankingResult
     ) {
         $rankingResult->delete();
 
-        // Tính lại thứ hạng sau khi xóa
-        $this->recalculateRanks();
+        /*
+         * Sau khi xóa,
+         * tính lại thứ hạng.
+         */
+        $this->recalculateRankings();
 
         return redirect()
-            ->route('ranking_results.index')
+            ->route('ranking-results.index')
             ->with(
                 'success',
-                'Đã xóa kết quả xếp hạng.'
+                'Xóa kết quả xếp hạng thành công!'
             );
-    }
-
-    /**
-     * Tính lại thứ hạng
-     *
-     * Điểm cao hơn sẽ xếp hạng cao hơn.
-     */
-    private function recalculateRanks()
-    {
-        $results = RankingResult::orderByDesc(
-            'total_score'
-        )->get();
-
-        $rank = 1;
-
-        foreach ($results as $result) {
-            $result->update([
-                'rank' => $rank,
-            ]);
-
-            $rank++;
-        }
     }
 }

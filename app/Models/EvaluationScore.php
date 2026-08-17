@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EvaluationScore extends Model
 {
@@ -23,28 +24,33 @@ class EvaluationScore extends Model
     /**
      * Điểm thuộc hồ sơ nào
      */
-    public function application()
+    public function application(): BelongsTo
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(
+            Application::class,
+            'application_id'
+        );
     }
 
     /**
      * Điểm thuộc tiêu chí nào
      */
-    public function criterion()
+    public function criterion(): BelongsTo
     {
-        return $this->belongsTo(ScoringCriterion::class);
+        return $this->belongsTo(
+            ScoringCriterion::class,
+            'criterion_id'
+        );
     }
 
     /**
      * Điểm do hội đồng nào chấm
      */
-    public function committee()
+    public function committee(): BelongsTo
     {
-        return $this->belongsTo(EvaluationCommittee::class);
+        return $this->belongsTo(
+            EvaluationCommittee::class,
+            'committee_id'
+        );
     }
-    public function evaluationScores()
-{
-    return $this->hasMany(EvaluationScore::class);
-}
 }

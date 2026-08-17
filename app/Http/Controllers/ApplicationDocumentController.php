@@ -43,9 +43,16 @@ class ApplicationDocumentController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'application_id' => 'required|exists:applications,id',
+            'application_id' => [
+                'required',
+                'exists:applications,id'
+            ],
 
-            'document_type' => 'required|string|max:255',
+            'document_type' => [
+                'required',
+                'string',
+                'max:255'
+            ],
 
             'file' => [
                 'required',
@@ -53,40 +60,60 @@ class ApplicationDocumentController extends Controller
                 'mimes:pdf,jpg,jpeg,png',
                 'max:5120',
             ],
+
+            'verification_status' => [
+                'required',
+                'in:Pending,Approved,Rejected'
+            ],
         ], [
-            'application_id.required' => 'Vui lòng chọn đơn đăng ký.',
-            'application_id.exists' => 'Đơn đăng ký không tồn tại.',
+            'application_id.required' =>
+                'Vui lòng chọn hồ sơ.',
 
-            'document_type.required' => 'Vui lòng nhập loại minh chứng.',
+            'application_id.exists' =>
+                'Hồ sơ không tồn tại.',
 
-            'file.required' => 'Vui lòng chọn file minh chứng.',
-            'file.file' => 'File tải lên không hợp lệ.',
-            'file.mimes' => 'File phải có định dạng PDF, JPG, JPEG hoặc PNG.',
-            'file.max' => 'File không được vượt quá 5MB.',
+            'document_type.required' =>
+                'Vui lòng nhập loại minh chứng.',
+
+            'file.required' =>
+                'Vui lòng chọn file minh chứng.',
+
+            'file.file' =>
+                'File tải lên không hợp lệ.',
+
+            'file.mimes' =>
+                'File phải có định dạng PDF, JPG, JPEG hoặc PNG.',
+
+            'file.max' =>
+                'File không được vượt quá 5MB.',
+
+            'verification_status.required' =>
+                'Vui lòng chọn trạng thái xác minh.',
+
+            'verification_status.in' =>
+                'Trạng thái xác minh không hợp lệ.',
         ]);
 
-        /*
-         * Lưu file vào:
-         * storage/app/public/documents
-         */
-        $filePath = $request->file('file')->store(
-            'documents',
-            'public'
-        );
+        $filePath = $request
+            ->file('file')
+            ->store('documents', 'public');
 
-        /*
-         * Lưu thông tin vào database
-         */
         ApplicationDocument::create([
-    'application_id' => $validated['application_id'],
-    'document_name' => $request->file('file')->getClientOriginalName(),
-    'document_type' => $validated['document_type'],
-    'file_path' => $filePath,
-]);
+            'application_id' => $validated['application_id'],
+            'document_name' => $request
+                ->file('file')
+                ->getClientOriginalName(),
+            'document_type' => $validated['document_type'],
+            'file_path' => $filePath,
+            'verification_status' => $validated['verification_status'],
+        ]);
 
         return redirect()
-            ->route('application_documents.index')
-            ->with('success', 'Upload minh chứng thành công!');
+            ->route('application-documents.index')
+            ->with(
+                'success',
+                'Upload minh chứng thành công!'
+            );
     }
 
     /**
@@ -126,9 +153,21 @@ class ApplicationDocumentController extends Controller
         ApplicationDocument $applicationDocument
     ) {
         $validated = $request->validate([
-            'application_id' => 'required|exists:applications,id',
+            'application_id' => [
+                'required',
+                'exists:applications,id'
+            ],
 
-            'document_type' => 'required|string|max:255',
+            'document_type' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+
+            'verification_status' => [
+                'required',
+                'in:Pending,Approved,Rejected'
+            ],
 
             'file' => [
                 'nullable',
@@ -137,29 +176,46 @@ class ApplicationDocumentController extends Controller
                 'max:5120',
             ],
         ], [
-            'application_id.required' => 'Vui lòng chọn đơn đăng ký.',
-            'application_id.exists' => 'Đơn đăng ký không tồn tại.',
+            'application_id.required' =>
+                'Vui lòng chọn hồ sơ.',
 
-            'document_type.required' => 'Vui lòng nhập loại minh chứng.',
+            'application_id.exists' =>
+                'Hồ sơ không tồn tại.',
 
-            'file.file' => 'File tải lên không hợp lệ.',
-            'file.mimes' => 'File phải có định dạng PDF, JPG, JPEG hoặc PNG.',
-            'file.max' => 'File không được vượt quá 5MB.',
+            'document_type.required' =>
+                'Vui lòng nhập loại minh chứng.',
+
+            'verification_status.required' =>
+                'Vui lòng chọn trạng thái xác minh.',
+
+            'verification_status.in' =>
+                'Trạng thái xác minh không hợp lệ.',
+
+            'file.file' =>
+                'File tải lên không hợp lệ.',
+
+            'file.mimes' =>
+                'File phải có định dạng PDF, JPG, JPEG hoặc PNG.',
+
+            'file.max' =>
+                'File không được vượt quá 5MB.',
         ]);
 
         $data = [
-            'application_id' => $validated['application_id'],
-            'document_type' => $validated['document_type'],
+            'application_id' =>
+                $validated['application_id'],
+
+            'document_type' =>
+                $validated['document_type'],
+
+            'verification_status' =>
+                $validated['verification_status'],
         ];
 
-        /*
-         * Nếu người dùng chọn file mới
-         */
+        // Nếu chọn file mới
         if ($request->hasFile('file')) {
 
-            /*
-             * Xóa file cũ
-             */
+            // Xóa file cũ
             if (
                 $applicationDocument->file_path &&
                 Storage::disk('public')->exists(
@@ -171,19 +227,25 @@ class ApplicationDocumentController extends Controller
                 );
             }
 
-            /*
-             * Lưu file mới
-             */
+            // Lưu file mới
             $data['file_path'] = $request
                 ->file('file')
                 ->store('documents', 'public');
+
+            // Lưu tên file mới
+            $data['document_name'] = $request
+                ->file('file')
+                ->getClientOriginalName();
         }
 
         $applicationDocument->update($data);
 
         return redirect()
-            ->route('application_documents.index')
-            ->with('success', 'Cập nhật minh chứng thành công!');
+            ->route('application-documents.index')
+            ->with(
+                'success',
+                'Cập nhật minh chứng thành công!'
+            );
     }
 
     /**
@@ -191,9 +253,7 @@ class ApplicationDocumentController extends Controller
      */
     public function destroy(ApplicationDocument $applicationDocument)
     {
-        /*
-         * Xóa file thật
-         */
+        // Xóa file thật
         if (
             $applicationDocument->file_path &&
             Storage::disk('public')->exists(
@@ -205,13 +265,15 @@ class ApplicationDocumentController extends Controller
             );
         }
 
-        /*
-         * Xóa database
-         */
+        // Xóa dữ liệu database
         $applicationDocument->delete();
 
         return redirect()
-            ->route('application_documents.index')
-            ->with('success', 'Xóa minh chứng thành công!');
+            ->route('application-documents.index')
+            ->with(
+                'success',
+                'Xóa minh chứng thành công!'
+            );
     }
 }
+

@@ -11,14 +11,14 @@ use Illuminate\Http\Request;
 class EvaluationScoreController extends Controller
 {
     /**
-     * Danh sách điểm
+     * Danh sách điểm đánh giá
      */
     public function index()
     {
         $scores = EvaluationScore::with([
-            'application',
+            'application.student',
             'criterion',
-            'committee',
+            'committee'
         ])
             ->latest()
             ->paginate(10);
@@ -34,18 +34,15 @@ class EvaluationScoreController extends Controller
      */
     public function create()
     {
-        $applications = Application::orderBy(
-            'id',
-            'desc'
-        )->get();
+        $applications = Application::with('student')
+            ->latest()
+            ->get();
 
-        $criteria = ScoringCriterion::orderBy(
-            'id'
-        )->get();
+        $criteria = ScoringCriterion::with('scholarshipProgram')
+            ->latest()
+            ->get();
 
-        $committees = EvaluationCommittee::orderBy(
-            'id'
-        )->get();
+        $committees = EvaluationCommittee::latest()->get();
 
         return view(
             'evaluation_scores.create',
@@ -65,74 +62,73 @@ class EvaluationScoreController extends Controller
         $validated = $request->validate([
             'application_id' => [
                 'required',
+                'integer',
                 'exists:applications,id',
             ],
-
             'criterion_id' => [
                 'required',
+                'integer',
                 'exists:scoring_criteria,id',
             ],
-
             'committee_id' => [
                 'required',
+                'integer',
                 'exists:evaluation_committees,id',
             ],
-
             'score' => [
                 'required',
                 'numeric',
                 'min:0',
                 'max:100',
             ],
-
             'comment' => [
                 'nullable',
                 'string',
                 'max:1000',
             ],
         ], [
-            'application_id.required' =>
-                'Vui lòng chọn hồ sơ.',
-
-            'criterion_id.required' =>
-                'Vui lòng chọn tiêu chí.',
-
-            'committee_id.required' =>
-                'Vui lòng chọn hội đồng.',
-
-            'score.required' =>
-                'Vui lòng nhập điểm.',
-
-            'score.numeric' =>
-                'Điểm phải là số.',
-
-            'score.min' =>
-                'Điểm không được nhỏ hơn 0.',
-
-            'score.max' =>
-                'Điểm không được lớn hơn 100.',
+            'application_id.required' => 'Vui lòng chọn hồ sơ.',
+            'application_id.exists' => 'Hồ sơ không tồn tại.',
+            'criterion_id.required' => 'Vui lòng chọn tiêu chí.',
+            'criterion_id.exists' => 'Tiêu chí không tồn tại.',
+            'committee_id.required' => 'Vui lòng chọn hội đồng.',
+            'committee_id.exists' => 'Hội đồng không tồn tại.',
+            'score.required' => 'Vui lòng nhập điểm.',
+            'score.numeric' => 'Điểm phải là số.',
+            'score.min' => 'Điểm không được nhỏ hơn 0.',
+            'score.max' => 'Điểm không được lớn hơn 100.',
+            'comment.max' => 'Nhận xét không được vượt quá 1000 ký tự.',
         ]);
+
+        $exists = EvaluationScore::where('application_id', $validated['application_id'])
+            ->where('criterion_id', $validated['criterion_id'])
+            ->where('committee_id', $validated['committee_id'])
+            ->exists();
+
+        if ($exists) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'application_id' => 'Hồ sơ này đã được chấm với tiêu chí và hội đồng đã chọn.'
+                ]);
+        }
 
         EvaluationScore::create($validated);
 
         return redirect()
-            ->route('evaluation_scores.index')
-            ->with(
-                'success',
-                'Thêm điểm đánh giá thành công!'
-            );
+            ->route('evaluation-scores.index')
+            ->with('success', 'Thêm điểm đánh giá thành công!');
     }
 
     /**
-     * Xem điểm
+     * Xem chi tiết
      */
-    public function show(
-        EvaluationScore $evaluationScore
-    ) {
+    public function show(EvaluationScore $evaluationScore)
+    {
         $evaluationScore->load([
-            'application',
+            'application.student',
             'criterion',
-            'committee',
+            'committee'
         ]);
 
         return view(
@@ -144,21 +140,17 @@ class EvaluationScoreController extends Controller
     /**
      * Form sửa điểm
      */
-    public function edit(
-        EvaluationScore $evaluationScore
-    ) {
-        $applications = Application::orderBy(
-            'id',
-            'desc'
-        )->get();
+    public function edit(EvaluationScore $evaluationScore)
+    {
+        $applications = Application::with('student')
+            ->latest()
+            ->get();
 
-        $criteria = ScoringCriterion::orderBy(
-            'id'
-        )->get();
+        $criteria = ScoringCriterion::with('scholarshipProgram')
+            ->latest()
+            ->get();
 
-        $committees = EvaluationCommittee::orderBy(
-            'id'
-        )->get();
+        $committees = EvaluationCommittee::latest()->get();
 
         return view(
             'evaluation_scores.edit',
@@ -181,56 +173,74 @@ class EvaluationScoreController extends Controller
         $validated = $request->validate([
             'application_id' => [
                 'required',
+                'integer',
                 'exists:applications,id',
             ],
-
             'criterion_id' => [
                 'required',
+                'integer',
                 'exists:scoring_criteria,id',
             ],
-
             'committee_id' => [
                 'required',
+                'integer',
                 'exists:evaluation_committees,id',
             ],
-
             'score' => [
                 'required',
                 'numeric',
                 'min:0',
                 'max:100',
             ],
-
             'comment' => [
                 'nullable',
                 'string',
                 'max:1000',
             ],
+        ], [
+            'application_id.required' => 'Vui lòng chọn hồ sơ.',
+            'application_id.exists' => 'Hồ sơ không tồn tại.',
+            'criterion_id.required' => 'Vui lòng chọn tiêu chí.',
+            'criterion_id.exists' => 'Tiêu chí không tồn tại.',
+            'committee_id.required' => 'Vui lòng chọn hội đồng.',
+            'committee_id.exists' => 'Hội đồng không tồn tại.',
+            'score.required' => 'Vui lòng nhập điểm.',
+            'score.numeric' => 'Điểm phải là số.',
+            'score.min' => 'Điểm không được nhỏ hơn 0.',
+            'score.max' => 'Điểm không được lớn hơn 100.',
+            'comment.max' => 'Nhận xét không được vượt quá 1000 ký tự.',
         ]);
+
+        $exists = EvaluationScore::where('application_id', $validated['application_id'])
+            ->where('criterion_id', $validated['criterion_id'])
+            ->where('committee_id', $validated['committee_id'])
+            ->where('id', '!=', $evaluationScore->id)
+            ->exists();
+
+        if ($exists) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'application_id' => 'Hồ sơ, tiêu chí và hội đồng này đã có điểm đánh giá.'
+                ]);
+        }
 
         $evaluationScore->update($validated);
 
         return redirect()
-            ->route('evaluation_scores.index')
-            ->with(
-                'success',
-                'Cập nhật điểm thành công!'
-            );
+            ->route('evaluation-scores.index')
+            ->with('success', 'Cập nhật điểm thành công!');
     }
 
     /**
      * Xóa điểm
      */
-    public function destroy(
-        EvaluationScore $evaluationScore
-    ) {
+    public function destroy(EvaluationScore $evaluationScore)
+    {
         $evaluationScore->delete();
 
         return redirect()
-            ->route('evaluation_scores.index')
-            ->with(
-                'success',
-                'Xóa điểm thành công!'
-            );
+            ->route('evaluation-scores.index')
+            ->with('success', 'Xóa điểm thành công!');
     }
 }
