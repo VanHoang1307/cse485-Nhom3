@@ -57,3 +57,442 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# ĐỀ TÀI 15 - QUẢN LÝ HỌC BỔNG, HỖ TRỢ VÀ THÀNH TÍCH SINH VIÊN
+
+## Thông tin sinh viên
+
+- Họ tên: Nguyễn Thị Thúy Hường
+- MSSV: 2251162032
+- Module phụ trách: Module 2 - Quản lý hồ sơ xét học bổng (Application & Evaluation Management)
+
+---
+
+# Công nghệ sử dụng
+
+- Laravel 12
+- PHP 8.2
+- MySQL
+- Bootstrap 5
+- Visual Studio Code
+- Git & GitHub
+- MySQL Workbench / dbdiagram.io (thiết kế ERD)
+
+---
+
+# Cấu trúc Module
+
+Module phụ trách gồm 5 bảng:
+
+- students
+- applications
+- application_documents
+- evaluation_scores
+- ranking_results
+
+Trong giai đoạn 1 đã hoàn thành CRUD cho:
+
+- students
+- applications
+
+---
+
+# Quy trình thực hiện
+
+## Bước 1. Cài đặt Laravel
+
+Tạo project
+
+```bash
+composer create-project laravel/laravel scholarship_management
+```
+
+Di chuyển vào project
+
+```bash
+cd scholarship_management
+```
+
+Khởi động
+
+```bash
+php artisan serve
+```
+
+---
+
+# Bước 2. Cấu hình Database
+
+Tạo database
+
+```sql
+CREATE DATABASE scholarship_management;
+```
+
+Chỉnh file
+
+```
+.env
+```
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=scholarship_management
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+---
+
+# Bước 3. Thiết kế CSDL
+
+Phân tích yêu cầu Module 2.
+
+Thiết kế 5 bảng
+
+- students
+- applications
+- application_documents
+- evaluation_scores
+- ranking_results
+
+Xác định
+
+- Primary Key
+- Foreign Key
+- Quan hệ 1-N
+- Quan hệ 1-1
+
+Sau đó vẽ ERD bằng
+
+- dbdiagram.io
+hoặc
+- MySQL Workbench
+
+---
+
+# Bước 4. Tạo Migration
+
+Sinh Migration
+
+```bash
+php artisan make:migration create_students_table
+
+php artisan make:migration create_applications_table
+
+php artisan make:migration create_application_documents_table
+
+php artisan make:migration create_evaluation_scores_table
+
+php artisan make:migration create_ranking_results_table
+```
+
+Viết cấu trúc bảng.
+
+Khai báo
+
+- Primary Key
+- Foreign Key
+- Unique
+- Cascade Delete
+
+---
+
+# Bước 5. Chạy Migration
+
+```bash
+php artisan migrate
+```
+
+Nếu cần chạy lại
+
+```bash
+php artisan migrate:fresh
+```
+
+---
+
+# Bước 6. Tạo Model
+
+Sinh Model
+
+```bash
+php artisan make:model Student
+
+php artisan make:model Application
+
+php artisan make:model ApplicationDocument
+
+php artisan make:model EvaluationScore
+
+php artisan make:model RankingResult
+```
+
+Khai báo
+
+```php
+protected $fillable=[]
+```
+
+Viết Relationship.
+
+Ví dụ
+
+Student
+
+```php
+public function applications()
+{
+    return $this->hasMany(Application::class);
+}
+```
+
+Application
+
+```php
+public function student()
+{
+    return $this->belongsTo(Student::class);
+}
+```
+
+---
+
+# Bước 7. Kiểm tra Relationship
+
+Mở
+
+```bash
+php artisan tinker
+```
+
+Kiểm tra
+
+```php
+App\Models\Student::first();
+
+App\Models\Application::first();
+```
+
+---
+
+# Bước 8. Tạo Seeder
+
+Sinh Seeder
+
+```bash
+php artisan make:seeder StudentSeeder
+
+php artisan make:seeder ApplicationSeeder
+```
+
+Thêm dữ liệu mẫu.
+
+Chạy
+
+```bash
+php artisan db:seed
+```
+
+---
+
+# Bước 9. Tạo Controller
+
+Sinh Controller
+
+```bash
+php artisan make:controller StudentController
+
+php artisan make:controller ApplicationController
+```
+
+---
+
+# Bước 10. Khai báo Route
+
+```php
+Route::resource('students', StudentController::class);
+
+Route::resource('applications', ApplicationController::class);
+```
+
+Kiểm tra
+
+```bash
+php artisan route:list
+```
+
+---
+
+# Bước 11. Xây dựng CRUD Students
+
+Đã hoàn thành
+
+✔ Danh sách sinh viên
+
+✔ Thêm sinh viên
+
+✔ Sửa sinh viên
+
+✔ Xóa sinh viên
+
+Các View
+
+```
+students/index.blade.php
+
+students/create.blade.php
+
+students/edit.blade.php
+```
+
+---
+
+# Bước 12. Xây dựng CRUD Applications
+
+Đã hoàn thành
+
+✔ Danh sách hồ sơ
+
+✔ Thêm hồ sơ
+
+✔ Sửa hồ sơ
+
+✔ Xóa hồ sơ
+
+Các View
+
+```
+applications/index.blade.php
+
+applications/create.blade.php
+
+applications/edit.blade.php
+```
+
+---
+
+# Bước 13. Validation
+
+Sử dụng
+
+```php
+$request->validate([
+...
+]);
+```
+
+Kiểm tra
+
+- Required
+- Email
+- Unique
+- Numeric
+- Date
+
+---
+
+# Bước 14. Giao diện
+
+Sử dụng
+
+Bootstrap 5
+
+Bao gồm
+
+- Card
+- Table
+- Alert
+- Button
+- Form
+- Confirm Delete
+
+---
+
+# Bước 15. Dữ liệu MySQL
+
+Sau khi chạy
+
+```bash
+php artisan migrate
+```
+
+Laravel tự động tạo các bảng trong MySQL.
+
+Không cần tự viết SQL CREATE TABLE bằng tay.
+
+Có thể xem dữ liệu trong
+
+phpMyAdmin
+
+hoặc
+
+MySQL Workbench.
+
+---
+
+# Cấu trúc thư mục
+
+```
+app
+ ├── Models
+ │      Student.php
+ │      Application.php
+ │      ApplicationDocument.php
+ │      EvaluationScore.php
+ │      RankingResult.php
+
+app
+ └── Http
+        Controllers
+            StudentController.php
+            ApplicationController.php
+
+database
+ ├── migrations
+ └── seeders
+
+resources
+ └── views
+        students
+        applications
+
+routes
+     web.php
+```
+
+---
+
+# Chức năng đã hoàn thành
+
+## Students
+
+- CRUD
+- Validation
+- Relationship
+- Migration
+- Seeder
+
+## Applications
+
+- CRUD
+- Validation
+- Relationship
+- Migration
+- Seeder
+
+---
+
+# Chức năng sẽ tiếp tục phát triển
+
+- CRUD Application Documents
+- Upload minh chứng
+- CRUD Evaluation Scores
+- Chấm điểm học bổng
+- CRUD Ranking Results
+- Xếp hạng sinh viên
+- Tích hợp Module 1
+- Dashboard
+- Authentication
+- Phân quyền

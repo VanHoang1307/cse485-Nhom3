@@ -1468,6 +1468,18 @@
         },
         {
             "name": "league/commonmark",
+<<<<<<< HEAD
+            "version": "2.9.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/commonmark.git",
+                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
+                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
+=======
             "version": "2.8.3",
             "source": {
                 "type": "git",
@@ -1478,6 +1490,7 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/1902f60f984235023acbe03db6ad614a37b3c3e7",
                 "reference": "1902f60f984235023acbe03db6ad614a37b3c3e7",
+>>>>>>> 8ee60937cae970876e6aa4aeb5da80c206e82860
                 "shasum": ""
             },
             "require": {
@@ -1514,7 +1527,11 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
+<<<<<<< HEAD
+                    "dev-main": "2.10-dev"
+=======
                     "dev-main": "2.9-dev"
+>>>>>>> 8ee60937cae970876e6aa4aeb5da80c206e82860
                 }
             },
             "autoload": {
@@ -1571,7 +1588,11 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
+            "time": "2026-08-03T13:42:31+00:00"
+=======
             "time": "2026-07-12T15:29:16+00:00"
+>>>>>>> 8ee60937cae970876e6aa4aeb5da80c206e82860
         },
         {
             "name": "league/config",
