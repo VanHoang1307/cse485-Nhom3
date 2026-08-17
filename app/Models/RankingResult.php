@@ -6,15 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class RankingResult extends Model
 {
-        protected $fillable = [
-
+    protected $fillable = [
         'application_id',
         'total_score',
-        'ranking',
-        'result'
-
+        'rank',
     ];
-        public function application()
+
+    /**
+     * Kết quả xếp hạng thuộc về một hồ sơ ứng tuyển
+     */
+    public function application()
     {
         return $this->belongsTo(Application::class);
     }

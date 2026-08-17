@@ -2,19 +2,32 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\Application;
 use App\Models\ApplicationDocument;
+use Illuminate\Database\Seeder;
 
 class ApplicationDocumentSeeder extends Seeder
 {
     public function run(): void
     {
-        ApplicationDocument::create([
-            'application_id' => 1,
-            'document_name' => 'Bảng điểm',
-            'document_type' => 'PDF',
-            'file_path' => 'uploads/bangdiem.pdf',
-            'verification_status' => 'Approved'
-        ]);
+        $applications = Application::all();
+
+        foreach ($applications as $application) {
+            ApplicationDocument::create([
+                'application_id' => $application->id,
+                'document_name' => 'Bảng điểm học tập',
+                'document_type' => 'Transcript',
+                'file_path' => 'documents/transcript_' . $application->id . '.pdf',
+                'verification_status' => 'Pending',
+            ]);
+
+            ApplicationDocument::create([
+                'application_id' => $application->id,
+                'document_name' => 'Giấy chứng nhận thành tích',
+                'document_type' => 'Certificate',
+                'file_path' => 'documents/certificate_' . $application->id . '.pdf',
+                'verification_status' => 'Pending',
+            ]);
+        }
     }
 }

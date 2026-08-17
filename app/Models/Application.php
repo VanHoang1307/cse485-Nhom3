@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\EvaluationScore;
 class Application extends Model
 {
     protected $fillable = [
@@ -36,4 +36,11 @@ class Application extends Model
     {
     return $this->belongsTo(ScholarshipProgram::class);
     }
+    public function evaluationScores()
+{
+    return $this->hasMany(
+        EvaluationScore::class,
+        'application_id'
+    );
+}
 }

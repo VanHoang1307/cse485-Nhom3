@@ -13,17 +13,26 @@ return new class extends Migration
     {
         Schema::create('ranking_results', function (Blueprint $table) {
             $table->id();
+
+            // Mỗi hồ sơ chỉ có một kết quả xếp hạng
             $table->foreignId('application_id')
                 ->unique()
-                ->constrained()
+                ->constrained('applications')
                 ->cascadeOnDelete();
-            $table->decimal('total_score',5,2);
+
+            // Tổng điểm
+            $table->decimal('total_score', 5, 2);
+
+            // Thứ hạng
             $table->integer('ranking');
-            $table->enum('result',[
-            'Qualified',
-            'Not Qualified',
-            'Waiting'
+
+            // Kết quả
+            $table->enum('result', [
+                'Qualified',
+                'Not Qualified',
+                'Waiting'
             ]);
+
             $table->timestamps();
         });
     }

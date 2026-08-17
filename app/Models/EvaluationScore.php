@@ -6,24 +6,45 @@ use Illuminate\Database\Eloquent\Model;
 
 class EvaluationScore extends Model
 {
-        protected $fillable = [
+    protected $table = 'evaluation_scores';
 
-            'application_id',
-            'criterion_id',
-            'committee_id',
-            'score',
-            'comment'
-        ];
-        public function application()
+    protected $fillable = [
+        'application_id',
+        'criterion_id',
+        'committee_id',
+        'score',
+        'comment',
+    ];
+
+    protected $casts = [
+        'score' => 'decimal:2',
+    ];
+
+    /**
+     * Điểm thuộc hồ sơ nào
+     */
+    public function application()
     {
         return $this->belongsTo(Application::class);
     }
-        public function criterion()
+
+    /**
+     * Điểm thuộc tiêu chí nào
+     */
+    public function criterion()
     {
-        return $this->belongsTo(ScoringCriteria::class,'criterion_id');
+        return $this->belongsTo(ScoringCriterion::class);
     }
-        public function committee()
+
+    /**
+     * Điểm do hội đồng nào chấm
+     */
+    public function committee()
     {
-        return $this->belongsTo(EvaluationCommittee::class,'committee_id');
+        return $this->belongsTo(EvaluationCommittee::class);
     }
+    public function evaluationScores()
+{
+    return $this->hasMany(EvaluationScore::class);
+}
 }

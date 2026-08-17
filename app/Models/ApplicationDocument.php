@@ -3,18 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ApplicationDocument extends Model
 {
-        protected $fillable = [
+    use HasFactory;
 
-            'application_id',
-            'document_name',
-            'document_type',
-            'file_path',
-            'verification_status'
+    protected $table = 'application_documents';
 
-        ];
+    protected $fillable = [
+        'application_id',
+        'document_name',
+        'document_type',
+        'file_path',
+    ];
+
     public function application()
     {
         return $this->belongsTo(Application::class);

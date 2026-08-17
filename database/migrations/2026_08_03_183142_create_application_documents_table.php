@@ -13,14 +13,28 @@ return new class extends Migration
     {
         Schema::create('application_documents', function (Blueprint $table) {
             $table->id();
+
+            // Hồ sơ sở hữu minh chứng
             $table->foreignId('application_id')
-                ->constrained()
+                ->constrained('applications')
                 ->cascadeOnDelete();
+
+            // Tên minh chứng
             $table->string('document_name');
-            $table->string('document_type');
+
+            // Đường dẫn file
             $table->string('file_path');
-            $table->string('verification_status')
-                ->default('Pending');
+
+            // Ngày upload
+            $table->date('upload_date')->nullable();
+
+            // Trạng thái minh chứng
+            $table->enum('status', [
+                'Pending',
+                'Approved',
+                'Rejected'
+            ])->default('Pending');
+
             $table->timestamps();
         });
     }
