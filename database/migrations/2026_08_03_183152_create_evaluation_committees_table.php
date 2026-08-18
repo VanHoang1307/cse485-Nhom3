@@ -10,9 +10,28 @@ return new class extends Migration
     {
         Schema::create('evaluation_committees', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
+
+            $table->foreignId('scholarship_program_id')
+                ->constrained('scholarship_programs')
+                ->cascadeOnDelete();
+
+            $table->string('committee_name');
+
+            $table->string('chairman');
+
+            $table->date('decision_date');
+
+            $table->enum('status', [
+                'active',
+                'closed',
+            ])->default('active');
+
             $table->timestamps();
+
+            $table->unique(
+                ['scholarship_program_id', 'committee_name'],
+                'committee_program_unique'
+            );
         });
     }
 
@@ -21,3 +40,4 @@ return new class extends Migration
         Schema::dropIfExists('evaluation_committees');
     }
 };
+

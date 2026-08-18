@@ -22,7 +22,10 @@ class EvaluationCommitteeController extends Controller
     {
         $programs = ScholarshipProgram::latest()->get();
 
-        return view('evaluation_committees.create', compact('programs'));
+        return view(
+            'evaluation_committees.create',
+            compact('programs')
+        );
     }
 
     public function store(Request $request)
@@ -31,6 +34,11 @@ class EvaluationCommitteeController extends Controller
             'scholarship_program_id' => [
                 'required',
                 'exists:scholarship_programs,id',
+            ],
+            'committee_name' => [
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('evaluation_committees', 'committee_name')
                     ->where(function ($query) use ($request) {
                         return $query->where(
@@ -38,11 +46,6 @@ class EvaluationCommitteeController extends Controller
                             $request->scholarship_program_id
                         );
                     }),
-            ],
-            'committee_name' => [
-                'required',
-                'string',
-                'max:255',
             ],
             'chairman' => [
                 'required',
@@ -63,7 +66,10 @@ class EvaluationCommitteeController extends Controller
 
         return redirect()
             ->route('evaluation-committees.index')
-            ->with('success', 'Thêm hội đồng xét duyệt thành công.');
+            ->with(
+                'success',
+                'Thêm hội đồng xét duyệt thành công.'
+            );
     }
 
     public function show(EvaluationCommittee $evaluationCommittee)
@@ -94,6 +100,11 @@ class EvaluationCommitteeController extends Controller
             'scholarship_program_id' => [
                 'required',
                 'exists:scholarship_programs,id',
+            ],
+            'committee_name' => [
+                'required',
+                'string',
+                'max:255',
                 Rule::unique('evaluation_committees', 'committee_name')
                     ->where(function ($query) use ($request) {
                         return $query->where(
@@ -102,11 +113,6 @@ class EvaluationCommitteeController extends Controller
                         );
                     })
                     ->ignore($evaluationCommittee->id),
-            ],
-            'committee_name' => [
-                'required',
-                'string',
-                'max:255',
             ],
             'chairman' => [
                 'required',
@@ -127,7 +133,10 @@ class EvaluationCommitteeController extends Controller
 
         return redirect()
             ->route('evaluation-committees.index')
-            ->with('success', 'Cập nhật hội đồng xét duyệt thành công.');
+            ->with(
+                'success',
+                'Cập nhật hội đồng xét duyệt thành công.'
+            );
     }
 
     public function destroy(EvaluationCommittee $evaluationCommittee)
@@ -136,6 +145,10 @@ class EvaluationCommitteeController extends Controller
 
         return redirect()
             ->route('evaluation-committees.index')
-            ->with('success', 'Xóa hội đồng xét duyệt thành công.');
+            ->with(
+                'success',
+                'Xóa hội đồng xét duyệt thành công.'
+            );
     }
 }
+

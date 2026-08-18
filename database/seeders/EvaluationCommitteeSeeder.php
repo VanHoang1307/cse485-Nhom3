@@ -2,44 +2,67 @@
 
 namespace Database\Seeders;
 
+use App\Models\EvaluationCommittee;
+use App\Models\ScholarshipProgram;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class EvaluationCommitteeSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('evaluation_committees')->insert([
+        $programs = ScholarshipProgram::all();
+
+        if ($programs->isEmpty()) {
+            return;
+        }
+
+        EvaluationCommittee::insert([
             [
-                'name' => 'Hội đồng xét học bổng khuyến khích học tập',
-                'description' => 'Hội đồng đánh giá hồ sơ học bổng khuyến khích học tập.',
+                'scholarship_program_id' => $programs[0]->id,
+                'committee_name' => 'Hội đồng xét học bổng khuyến khích học tập',
+                'chairman' => 'Nguyễn Văn A',
+                'decision_date' => '2026-08-01',
+                'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Hội đồng xét học bổng Lê Văn Kiểm',
-                'description' => 'Hội đồng đánh giá hồ sơ học bổng Lê Văn Kiểm.',
+                'scholarship_program_id' => $programs[1]->id ?? $programs[0]->id,
+                'committee_name' => 'Hội đồng xét học bổng Lê Văn Kiểm',
+                'chairman' => 'Nguyễn Văn B',
+                'decision_date' => '2026-08-02',
+                'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Hội đồng xét học bổng Vingroup',
-                'description' => 'Hội đồng đánh giá hồ sơ học bổng Vingroup.',
+                'scholarship_program_id' => $programs[2]->id ?? $programs[0]->id,
+                'committee_name' => 'Hội đồng xét học bổng Vingroup',
+                'chairman' => 'Nguyễn Văn C',
+                'decision_date' => '2026-08-03',
+                'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Hội đồng xét sinh viên xuất sắc',
-                'description' => 'Hội đồng đánh giá hồ sơ sinh viên xuất sắc.',
+                'scholarship_program_id' => $programs[3]->id ?? $programs[0]->id,
+                'committee_name' => 'Hội đồng xét sinh viên xuất sắc',
+                'chairman' => 'Nguyễn Văn D',
+                'decision_date' => '2026-08-04',
+                'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Hội đồng hỗ trợ sinh viên khó khăn',
-                'description' => 'Hội đồng đánh giá hồ sơ sinh viên có hoàn cảnh khó khăn.',
+                'scholarship_program_id' => $programs[4]->id ?? $programs[0]->id,
+                'committee_name' => 'Hội đồng hỗ trợ sinh viên khó khăn',
+                'chairman' => 'Nguyễn Văn E',
+                'decision_date' => '2026-08-05',
+                'status' => 'closed',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);
     }
 }
+

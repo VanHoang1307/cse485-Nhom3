@@ -49,7 +49,6 @@
     </div>
 </div>
 
-
 {{-- THỐNG KÊ --}}
 <div class="row g-4 mb-4">
 
@@ -83,7 +82,6 @@
         </div>
     </div>
 
-
     {{-- Sinh viên --}}
     <div class="col-xl-3 col-md-6">
         <div class="card border-0 shadow-sm h-100">
@@ -114,7 +112,6 @@
         </div>
     </div>
 
-
     {{-- Hồ sơ --}}
     <div class="col-xl-3 col-md-6">
         <div class="card border-0 shadow-sm h-100">
@@ -144,7 +141,6 @@
             </div>
         </div>
     </div>
-
 
     {{-- Kết quả --}}
     <div class="col-xl-3 col-md-6">
@@ -178,7 +174,6 @@
 
 </div>
 
-
 {{-- QUẢN LÝ NHANH --}}
 <div class="row g-4 mb-4">
 
@@ -200,6 +195,7 @@
 
                 <div class="row g-3">
 
+                    {{-- Học bổng --}}
                     <div class="col-md-6">
                         <a href="{{ route('scholarships.index') }}"
                            class="text-decoration-none">
@@ -212,6 +208,7 @@
                         </a>
                     </div>
 
+                    {{-- Điều kiện xét --}}
                     <div class="col-md-6">
                         <a href="{{ route('eligibility-rules.index') }}"
                            class="text-decoration-none">
@@ -224,6 +221,7 @@
                         </a>
                     </div>
 
+                    {{-- Sinh viên --}}
                     <div class="col-md-6">
                         <a href="{{ route('students.index') }}"
                            class="text-decoration-none">
@@ -236,6 +234,7 @@
                         </a>
                     </div>
 
+                    {{-- Hồ sơ đăng ký --}}
                     <div class="col-md-6">
                         <a href="{{ route('applications.index') }}"
                            class="text-decoration-none">
@@ -248,6 +247,7 @@
                         </a>
                     </div>
 
+                    {{-- Điểm đánh giá --}}
                     <div class="col-md-6">
                         <a href="{{ route('evaluation-scores.index') }}"
                            class="text-decoration-none">
@@ -260,6 +260,20 @@
                         </a>
                     </div>
 
+                    {{-- Hội đồng xét duyệt --}}
+                    <div class="col-md-6">
+                        <a href="{{ route('evaluation-committees.index') }}"
+                           class="text-decoration-none">
+                            <div class="border rounded-3 p-3 h-100">
+                                <h5>⚖️ Hội đồng xét duyệt</h5>
+                                <p class="text-muted mb-0">
+                                    Quản lý hội đồng xét duyệt học bổng
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                    {{-- Xếp hạng --}}
                     <div class="col-md-6">
                         <a href="{{ route('ranking-results.index') }}"
                            class="text-decoration-none">
@@ -279,7 +293,6 @@
         </div>
 
     </div>
-
 
     {{-- THÔNG TIN HỆ THỐNG --}}
     <div class="col-lg-4">
@@ -329,7 +342,6 @@
     </div>
 
 </div>
-
 
 {{-- FOOTER --}}
 <div class="text-center text-muted py-3">
