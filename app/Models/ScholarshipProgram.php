@@ -18,9 +18,6 @@ class ScholarshipProgram extends Model
         'status',
     ];
 
-    /**
-     * Một chương trình có nhiều điều kiện xét.
-     */
     public function eligibilityRules(): HasMany
     {
         return $this->hasMany(
@@ -29,9 +26,6 @@ class ScholarshipProgram extends Model
         );
     }
 
-    /**
-     * Một chương trình có nhiều tiêu chí chấm điểm.
-     */
     public function scoringCriteria(): HasMany
     {
         return $this->hasMany(
@@ -40,20 +34,6 @@ class ScholarshipProgram extends Model
         );
     }
 
-    /**
-     * Một chương trình có nhiều hội đồng xét duyệt.
-     */
-    public function evaluationCommittees(): HasMany
-    {
-        return $this->hasMany(
-            EvaluationCommittee::class,
-            'scholarship_program_id'
-        );
-    }
-
-    /**
-     * Một chương trình có nhiều hồ sơ đăng ký.
-     */
     public function applications(): HasMany
     {
         return $this->hasMany(
@@ -62,4 +42,3 @@ class ScholarshipProgram extends Model
         );
     }
 }
-

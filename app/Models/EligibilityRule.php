@@ -23,3 +23,4 @@ class EligibilityRule extends Model
         );
     }
 }
+

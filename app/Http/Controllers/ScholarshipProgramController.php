@@ -57,7 +57,6 @@ class ScholarshipProgramController extends Controller
         $scholarship = ScholarshipProgram::with([
             'eligibilityRules',
             'scoringCriteria',
-            'evaluationCommittees',
             'applications'
         ])->findOrFail($id);
 
@@ -100,14 +99,12 @@ class ScholarshipProgramController extends Controller
         $scholarship = ScholarshipProgram::withCount([
             'eligibilityRules',
             'scoringCriteria',
-            'evaluationCommittees',
             'applications'
         ])->findOrFail($id);
 
         $hasRelatedData =
             $scholarship->eligibility_rules_count > 0 ||
             $scholarship->scoring_criteria_count > 0 ||
-            $scholarship->evaluation_committees_count > 0 ||
             $scholarship->applications_count > 0;
 
         if ($hasRelatedData) {
@@ -237,4 +234,3 @@ class ScholarshipProgramController extends Controller
         ]);
     }
 }
-

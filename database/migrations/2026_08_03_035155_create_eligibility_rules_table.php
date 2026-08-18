@@ -25,11 +25,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Mỗi chương trình có một bộ điều kiện xét duyệt
-            $table->unique(
-                'scholarship_program_id',
-                'eligibility_program_unique'
-            );
+            // Không đặt unique ở scholarship_program_id
+            // Một chương trình có thể có nhiều điều kiện
         });
     }
 

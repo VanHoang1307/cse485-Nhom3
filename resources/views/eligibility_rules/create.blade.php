@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Thêm điểm đánh giá')
+@section('title', 'Thêm điều kiện xét duyệt')
 
 @section('content')
 
@@ -8,17 +8,13 @@
 
     <div class="card shadow">
 
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-secondary text-white">
             <h3 class="mb-0">
-                Thêm điểm đánh giá
+                Thêm điều kiện xét duyệt
             </h3>
         </div>
 
         <div class="card-body">
-
-            <p class="text-muted">
-                Nhập kết quả chấm điểm hồ sơ
-            </p>
 
             @if($errors->any())
                 <div class="alert alert-danger">
@@ -30,179 +26,113 @@
                 </div>
             @endif
 
-            <form
-                action="{{ route('evaluation-scores.store') }}"
-                method="POST"
-            >
+            <form action="{{ route('eligibility-rules.store') }}" method="POST">
 
                 @csrf
 
-                {{-- Hồ sơ --}}
+                {{-- Chương trình học bổng --}}
                 <div class="mb-3">
-
                     <label class="form-label">
-                        Hồ sơ học bổng <span class="text-danger">*</span>
+                        Chương trình học bổng <span class="text-danger">*</span>
                     </label>
 
                     <select
-                        name="application_id"
+                        name="scholarship_program_id"
                         class="form-select"
                         required
                     >
-
                         <option value="">
-                            -- Chọn hồ sơ --
+                            -- Chọn chương trình học bổng --
                         </option>
 
-                        @foreach($applications as $application)
-
+                        @foreach($scholarshipPrograms as $program)
                             <option
-                                value="{{ $application->id }}"
-                                {{ old('application_id') == $application->id ? 'selected' : '' }}
+                                value="{{ $program->id }}"
+                                {{ old('scholarship_program_id') == $program->id ? 'selected' : '' }}
                             >
-
-                                {{ $application->application_code }}
-
+                                {{ $program->name }}
+                                - {{ $program->academic_year }}
+                                - HK{{ $program->semester }}
                             </option>
-
                         @endforeach
-
                     </select>
-
                 </div>
 
-
-                {{-- Tiêu chí --}}
+                {{-- GPA tối thiểu --}}
                 <div class="mb-3">
-
                     <label class="form-label">
-                        Tiêu chí đánh giá <span class="text-danger">*</span>
-                    </label>
-
-                    <select
-                        name="criterion_id"
-                        class="form-select"
-                        required
-                    >
-
-                        <option value="">
-                            -- Chọn tiêu chí --
-                        </option>
-
-                        @foreach($criteria as $criterion)
-
-                            <option
-                                value="{{ $criterion->id }}"
-                                {{ old('criterion_id') == $criterion->id ? 'selected' : '' }}
-                            >
-
-                                {{ $criterion->name }}
-                                - Tối đa {{ number_format($criterion->max_score, 2) }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                </div>
-
-
-                {{-- Hội đồng --}}
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Hội đồng đánh giá <span class="text-danger">*</span>
-                    </label>
-
-                    <select
-                        name="committee_id"
-                        class="form-select"
-                        required
-                    >
-
-                        <option value="">
-                            -- Chọn hội đồng --
-                        </option>
-
-                        @foreach($committees as $committee)
-
-                            <option
-                                value="{{ $committee->id }}"
-                                {{ old('committee_id') == $committee->id ? 'selected' : '' }}
-                            >
-
-                                {{ $committee->name }}
-
-                            </option>
-
-                        @endforeach
-
-                    </select>
-
-                    @if($committees->isEmpty())
-
-                        <div class="alert alert-warning mt-2">
-                            Chưa có hội đồng đánh giá.
-                            Vui lòng thêm hội đồng trước.
-                        </div>
-
-                    @endif
-
-                </div>
-
-
-                {{-- Điểm --}}
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Điểm <span class="text-danger">*</span>
+                        GPA tối thiểu <span class="text-danger">*</span>
                     </label>
 
                     <input
                         type="number"
-                        name="score"
+                        name="min_gpa"
                         class="form-control"
                         min="0"
-                        max="100"
+                        max="4"
                         step="0.01"
-                        value="{{ old('score') }}"
+                        value="{{ old('min_gpa') }}"
                         required
+                    >
+                </div>
+
+                {{-- Tín chỉ tối thiểu --}}
+                <div class="mb-3">
+                    <label class="form-label">
+                        Số tín chỉ tối thiểu <span class="text-danger">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        name="min_credits"
+                        class="form-control"
+                        min="1"
+                        value="{{ old('min_credits') }}"
+                        required
+                    >
+                </div>
+
+                {{-- Không cho phép nợ môn --}}
+                <div class="mb-3">
+                    <label class="form-label">
+                        Cho phép nợ môn
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        value="Không"
+                        disabled
                     >
 
                     <small class="text-muted">
-                        Điểm từ 0 đến 100.
+                        Hệ thống hiện không cho phép sinh viên nợ môn.
                     </small>
-
                 </div>
 
-
-                {{-- Nhận xét --}}
+                {{-- Ghi chú --}}
                 <div class="mb-3">
-
                     <label class="form-label">
-                        Nhận xét
+                        Ghi chú
                     </label>
 
                     <textarea
-                        name="comment"
+                        name="note"
                         class="form-control"
                         rows="4"
-                        placeholder="Nhập nhận xét nếu có..."
-                    >{{ old('comment') }}</textarea>
-
+                        placeholder="Nhập ghi chú nếu có..."
+                    >{{ old('note') }}</textarea>
                 </div>
-
 
                 <button
                     type="submit"
                     class="btn btn-success"
                 >
-                    Lưu điểm
+                    Lưu điều kiện
                 </button>
 
                 <a
-                    href="{{ route('evaluation-scores.index') }}"
+                    href="{{ route('eligibility-rules.index') }}"
                     class="btn btn-secondary"
                 >
                     Hủy
@@ -217,3 +147,4 @@
 </div>
 
 @endsection
+
