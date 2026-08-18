@@ -19,7 +19,6 @@
 
     {{-- Tiêu đề --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <div>
             <h2 class="mb-1">
                 Chấm điểm hồ sơ
@@ -36,14 +35,11 @@
         >
             + Thêm điểm
         </a>
-
     </div>
 
     {{-- Thông báo thành công --}}
     @if(session('success'))
-
         <div class="alert alert-success alert-dismissible fade show">
-
             {{ session('success') }}
 
             <button
@@ -51,16 +47,12 @@
                 class="btn-close"
                 data-bs-dismiss="alert"
             ></button>
-
         </div>
-
     @endif
 
     {{-- Thông báo lỗi --}}
     @if(session('error'))
-
         <div class="alert alert-danger alert-dismissible fade show">
-
             {{ session('error') }}
 
             <button
@@ -68,34 +60,23 @@
                 class="btn-close"
                 data-bs-dismiss="alert"
             ></button>
-
         </div>
-
     @endif
 
     @if($errors->any())
-
         <div class="alert alert-danger">
-
             <strong>Có lỗi xảy ra:</strong>
 
             <ul class="mb-0 mt-2">
-
                 @foreach($errors->all() as $error)
-
                     <li>{{ $error }}</li>
-
                 @endforeach
-
             </ul>
-
         </div>
-
     @endif
 
     {{-- Bảng điểm --}}
     <div class="card shadow-sm">
-
         <div class="card-body p-0">
 
             @if($scores->count())
@@ -105,9 +86,7 @@
                     <table class="table table-bordered table-hover align-middle mb-0">
 
                         <thead class="table-primary">
-
                             <tr>
-
                                 <th style="width: 60px;">
                                     STT
                                 </th>
@@ -142,9 +121,7 @@
                                 >
                                     Thao tác
                                 </th>
-
                             </tr>
-
                         </thead>
 
                         <tbody>
@@ -160,103 +137,69 @@
 
                                     {{-- Hồ sơ --}}
                                     <td>
-
                                         @if($score->application)
-
                                             <strong>
                                                 {{ $score->application->application_code }}
                                             </strong>
-
                                         @else
-
                                             <span class="text-muted">
                                                 Không xác định
                                             </span>
-
                                         @endif
-
                                     </td>
 
                                     {{-- Sinh viên --}}
                                     <td>
-
                                         @if(
                                             $score->application &&
                                             $score->application->student
                                         )
-
                                             {{ $score->application->student->full_name }}
-
                                         @else
-
                                             <span class="text-muted">
                                                 Không xác định
                                             </span>
-
                                         @endif
-
                                     </td>
 
                                     {{-- Tiêu chí --}}
                                     <td>
-
                                         @if($score->criterion)
-
-                                            {{ $score->criterion->name }}
-
+                                            {{ $score->criterion->criteria_name }}
                                         @else
-
                                             <span class="text-muted">
                                                 Không xác định
                                             </span>
-
                                         @endif
-
                                     </td>
 
                                     {{-- Hội đồng --}}
                                     <td>
-
                                         @if($score->committee)
-
                                             {{ $score->committee->committee_name }}
-
                                         @else
-
                                             <span class="text-muted">
                                                 Không xác định
                                             </span>
-
                                         @endif
-
                                     </td>
 
                                     {{-- Điểm --}}
                                     <td>
-
                                         <span class="badge bg-success fs-6">
-
                                             {{ number_format((float) $score->score, 2) }}
-
                                         </span>
-
                                     </td>
 
                                     {{-- Nhận xét --}}
                                     <td>
-
                                         @if($score->comment)
-
                                             {{ $score->comment }}
-
                                         @else
-
                                             <span class="text-muted">
                                                 Không có
                                             </span>
-
                                         @endif
-
                                     </td>
 
                                     {{-- Thao tác --}}
@@ -286,7 +229,6 @@
                                                 method="POST"
                                                 onsubmit="return confirm('Bạn có chắc muốn xóa điểm này?');"
                                             >
-
                                                 @csrf
                                                 @method('DELETE')
 
@@ -296,7 +238,6 @@
                                                 >
                                                     Xóa
                                                 </button>
-
                                             </form>
 
                                         </div>
@@ -315,13 +256,9 @@
 
                 {{-- Phân trang --}}
                 @if($scores->hasPages())
-
                     <div class="d-flex justify-content-center p-3">
-
                         {{ $scores->links() }}
-
                     </div>
-
                 @endif
 
             @else
@@ -348,7 +285,6 @@
             @endif
 
         </div>
-
     </div>
 
 </div>
@@ -360,4 +296,3 @@
 </body>
 
 </html>
-

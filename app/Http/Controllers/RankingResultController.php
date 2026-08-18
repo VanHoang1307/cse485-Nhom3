@@ -13,7 +13,10 @@ class RankingResultController extends Controller
      */
     public function index()
     {
-        $results = RankingResult::with('application')
+        $results = RankingResult::with([
+            'application.student',
+            'application.scholarshipProgram',
+        ])
             ->orderBy('ranking')
             ->paginate(10);
 
@@ -28,7 +31,12 @@ class RankingResultController extends Controller
      */
     public function create()
     {
-        $applications = Application::with('student')
+        $applications = Application::with([
+            'student',
+            'scholarshipProgram',
+            'evaluationScores.criterion',
+            'evaluationScores.committee',
+        ])
             ->latest()
             ->get();
 
@@ -46,43 +54,57 @@ class RankingResultController extends Controller
         $validated = $request->validate([
             'application_id' => [
                 'required',
+                'integer',
                 'exists:applications,id',
-                'unique:ranking_results,application_id'
-            ],
-
-            'total_score' => [
-                'required',
-                'numeric',
-                'min:0',
-                'max:100'
+                'unique:ranking_results,application_id',
             ],
         ], [
-            'application_id.required' => 'Vui lòng chọn hồ sơ.',
+            'application_id.required' =>
+                'Vui lòng chọn hồ sơ.',
 
-            'application_id.exists' => 'Hồ sơ không tồn tại.',
+            'application_id.exists' =>
+                'Hồ sơ không tồn tại.',
 
-            'application_id.unique' => 'Hồ sơ này đã có kết quả xếp hạng.',
+            'application_id.unique' =>
+                'Hồ sơ này đã có kết quả xếp hạng.',
+        ]);
 
-            'total_score.required' => 'Vui lòng nhập tổng điểm.',
+        $application = Application::with([
+            'evaluationScores.criterion',
+            'evaluationScores.committee',
+        ])->findOrFail(
+            $validated['application_id']
+        );
 
-            'total_score.numeric' => 'Tổng điểm phải là số.',
+        /*
+         * Hồ sơ phải có ít nhất một điểm đánh giá
+         */
+        if ($application->evaluationScores->isEmpty()) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'application_id' =>
+                        'Hồ sơ này chưa có điểm đánh giá. Vui lòng chấm điểm trước khi xếp hạng.',
+                ]);
+        }
 
-            'total_score.min' => 'Tổng điểm không được nhỏ hơn 0.',
+        /*
+         * Tính tổng điểm tự động
+         */
+        $totalScore = $this->calculateTotalScore($application);
 
-            'total_score.max' => 'Tổng điểm không được lớn hơn 100.',
+        /*
+         * Tạo kết quả xếp hạng
+         */
+        RankingResult::create([
+            'application_id' => $application->id,
+            'total_score' => $totalScore,
+            'ranking' => 0,
+            'result' => 'Not Qualified',
         ]);
 
         /*
-         * Tạm thời để ranking = 0.
-         * Sau khi thêm bản ghi sẽ tính lại toàn bộ.
-         */
-        $validated['ranking'] = 0;
-        $validated['result'] = 'Not Qualified';
-
-        RankingResult::create($validated);
-
-        /*
-         * Tính lại thứ hạng cho toàn bộ kết quả.
+         * Tính lại thứ hạng toàn bộ hồ sơ
          */
         $this->recalculateRankings();
 
@@ -90,14 +112,70 @@ class RankingResultController extends Controller
             ->route('ranking-results.index')
             ->with(
                 'success',
-                'Thêm kết quả xếp hạng thành công!'
+                'Tạo kết quả xếp hạng thành công!'
             );
     }
 
     /**
-     * Tính lại toàn bộ thứ hạng
+     * Tính tổng điểm theo trọng số tiêu chí
+     *
+     * Nếu một tiêu chí có nhiều hội đồng cùng chấm,
+     * hệ thống lấy điểm trung bình của các hội đồng.
      */
-    private function recalculateRankings()
+    private function calculateTotalScore(
+        Application $application
+    ): float {
+        $totalScore = 0;
+
+        /*
+         * Chỉ lấy các điểm có tiêu chí hợp lệ
+         */
+        $scoresByCriterion = $application
+            ->evaluationScores
+            ->filter(function ($evaluationScore) {
+                return $evaluationScore->criterion !== null;
+            })
+            ->groupBy('criterion_id');
+
+        foreach ($scoresByCriterion as $scores) {
+
+            $criterion = $scores->first()->criterion;
+
+            $maxScore = (float) $criterion->max_score;
+            $weight = (float) $criterion->weight;
+
+            /*
+             * Bỏ qua tiêu chí không có điểm tối đa
+             */
+            if ($maxScore <= 0) {
+                continue;
+            }
+
+            /*
+             * Tính điểm trung bình của các hội đồng
+             */
+            $averageScore = $scores->avg(function ($evaluationScore) {
+                return (float) $evaluationScore->score;
+            });
+
+            /*
+             * Chuẩn hóa điểm:
+             *
+             * Điểm / Điểm tối đa * Trọng số
+             */
+            $convertedScore =
+                ($averageScore / $maxScore) * $weight;
+
+            $totalScore += $convertedScore;
+        }
+
+        return round($totalScore, 2);
+    }
+
+    /**
+     * Tính lại thứ hạng toàn bộ kết quả
+     */
+    private function recalculateRankings(): void
     {
         $results = RankingResult::orderByDesc('total_score')
             ->orderBy('id')
@@ -118,12 +196,15 @@ class RankingResultController extends Controller
     }
 
     /**
-     * Xem chi tiết
+     * Xem chi tiết kết quả
      */
     public function show(RankingResult $rankingResult)
     {
         $rankingResult->load([
-            'application.student'
+            'application.student',
+            'application.scholarshipProgram',
+            'application.evaluationScores.criterion',
+            'application.evaluationScores.committee',
         ]);
 
         return view(
@@ -133,20 +214,20 @@ class RankingResultController extends Controller
     }
 
     /**
-     * Form sửa
+     * Form sửa kết quả
      */
     public function edit(RankingResult $rankingResult)
     {
-        $applications = Application::with('student')
-            ->latest()
-            ->get();
+        $rankingResult->load([
+            'application.student',
+            'application.scholarshipProgram',
+            'application.evaluationScores.criterion',
+            'application.evaluationScores.committee',
+        ]);
 
         return view(
             'ranking_results.edit',
-            compact(
-                'rankingResult',
-                'applications'
-            )
+            compact('rankingResult')
         );
     }
 
@@ -160,37 +241,55 @@ class RankingResultController extends Controller
         $validated = $request->validate([
             'application_id' => [
                 'required',
+                'integer',
                 'exists:applications,id',
-                'unique:ranking_results,application_id,' . $rankingResult->id
-            ],
-
-            'total_score' => [
-                'required',
-                'numeric',
-                'min:0',
-                'max:100'
+                'unique:ranking_results,application_id,' . $rankingResult->id,
             ],
         ], [
-            'application_id.required' => 'Vui lòng chọn hồ sơ.',
+            'application_id.required' =>
+                'Vui lòng chọn hồ sơ.',
 
-            'application_id.exists' => 'Hồ sơ không tồn tại.',
+            'application_id.exists' =>
+                'Hồ sơ không tồn tại.',
 
-            'application_id.unique' => 'Hồ sơ này đã có kết quả xếp hạng.',
-
-            'total_score.required' => 'Vui lòng nhập tổng điểm.',
-
-            'total_score.numeric' => 'Tổng điểm phải là số.',
-
-            'total_score.min' => 'Tổng điểm không được nhỏ hơn 0.',
-
-            'total_score.max' => 'Tổng điểm không được lớn hơn 100.',
+            'application_id.unique' =>
+                'Hồ sơ này đã có kết quả xếp hạng.',
         ]);
 
-        $rankingResult->update($validated);
+        $application = Application::with([
+            'evaluationScores.criterion',
+            'evaluationScores.committee',
+        ])->findOrFail(
+            $validated['application_id']
+        );
 
         /*
-         * Sau khi sửa điểm,
-         * tính lại toàn bộ thứ hạng.
+         * Hồ sơ phải có điểm đánh giá
+         */
+        if ($application->evaluationScores->isEmpty()) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'application_id' =>
+                        'Hồ sơ này chưa có điểm đánh giá. Vui lòng chấm điểm trước khi xếp hạng.',
+                ]);
+        }
+
+        /*
+         * Tính lại tổng điểm
+         */
+        $totalScore = $this->calculateTotalScore($application);
+
+        /*
+         * Cập nhật kết quả
+         */
+        $rankingResult->update([
+            'application_id' => $application->id,
+            'total_score' => $totalScore,
+        ]);
+
+        /*
+         * Tính lại thứ hạng
          */
         $this->recalculateRankings();
 
@@ -211,8 +310,7 @@ class RankingResultController extends Controller
         $rankingResult->delete();
 
         /*
-         * Sau khi xóa,
-         * tính lại thứ hạng.
+         * Tính lại thứ hạng sau khi xóa
          */
         $this->recalculateRankings();
 

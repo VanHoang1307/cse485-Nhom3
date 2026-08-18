@@ -10,59 +10,44 @@ class EvaluationCommitteeSeeder extends Seeder
 {
     public function run(): void
     {
-        $programs = ScholarshipProgram::all();
+        $programs = ScholarshipProgram::orderBy('id')->get();
 
         if ($programs->isEmpty()) {
             return;
         }
 
-        EvaluationCommittee::insert([
-            [
-                'scholarship_program_id' => $programs[0]->id,
-                'committee_name' => 'Hội đồng xét học bổng khuyến khích học tập',
-                'chairman' => 'Nguyễn Văn A',
-                'decision_date' => '2026-08-01',
+        $committees = [];
+
+        $committeeNames = [
+            'Hội đồng xét học bổng khuyến khích học tập',
+            'Hội đồng xét học bổng Lê Văn Kiểm',
+            'Hội đồng xét học bổng Vingroup',
+            'Hội đồng xét sinh viên xuất sắc',
+            'Hội đồng hỗ trợ sinh viên khó khăn',
+        ];
+
+        $chairmen = [
+            'Nguyễn Văn A',
+            'Nguyễn Văn B',
+            'Nguyễn Văn C',
+            'Nguyễn Văn D',
+            'Nguyễn Văn E',
+        ];
+
+        foreach ($programs as $index => $program) {
+            $nameIndex = $index % count($committeeNames);
+
+            $committees[] = [
+                'scholarship_program_id' => $program->id,
+                'committee_name' => $committeeNames[$nameIndex],
+                'chairman' => $chairmen[$nameIndex],
+                'decision_date' => now()->subDays(20 - $index)->format('Y-m-d'),
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'scholarship_program_id' => $programs[1]->id ?? $programs[0]->id,
-                'committee_name' => 'Hội đồng xét học bổng Lê Văn Kiểm',
-                'chairman' => 'Nguyễn Văn B',
-                'decision_date' => '2026-08-02',
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'scholarship_program_id' => $programs[2]->id ?? $programs[0]->id,
-                'committee_name' => 'Hội đồng xét học bổng Vingroup',
-                'chairman' => 'Nguyễn Văn C',
-                'decision_date' => '2026-08-03',
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'scholarship_program_id' => $programs[3]->id ?? $programs[0]->id,
-                'committee_name' => 'Hội đồng xét sinh viên xuất sắc',
-                'chairman' => 'Nguyễn Văn D',
-                'decision_date' => '2026-08-04',
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'scholarship_program_id' => $programs[4]->id ?? $programs[0]->id,
-                'committee_name' => 'Hội đồng hỗ trợ sinh viên khó khăn',
-                'chairman' => 'Nguyễn Văn E',
-                'decision_date' => '2026-08-05',
-                'status' => 'closed',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+            ];
+        }
+
+        EvaluationCommittee::insert($committees);
     }
 }
-

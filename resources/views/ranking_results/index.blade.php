@@ -1,19 +1,6 @@
-<!DOCTYPE html>
-<html lang="vi">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Kết quả xếp hạng</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-</head>
-
-<body>
+@section('content')
 
 <div class="container py-4">
 
@@ -25,7 +12,7 @@
             </h2>
 
             <p class="text-muted mb-0">
-                Quản lý kết quả xếp hạng hồ sơ học bổng
+                Kết quả tổng hợp và xếp hạng hồ sơ học bổng
             </p>
         </div>
 
@@ -33,11 +20,12 @@
             href="{{ route('ranking-results.create') }}"
             class="btn btn-primary"
         >
-            + Thêm kết quả
+            + Tạo kết quả xếp hạng
         </a>
 
     </div>
 
+    {{-- Thông báo thành công --}}
     @if(session('success'))
 
         <div class="alert alert-success alert-dismissible fade show">
@@ -54,6 +42,7 @@
 
     @endif
 
+    {{-- Thông báo lỗi --}}
     @if(session('error'))
 
         <div class="alert alert-danger alert-dismissible fade show">
@@ -70,6 +59,18 @@
 
     @endif
 
+    {{-- Giải thích --}}
+    <div class="alert alert-info">
+
+        <strong>Cách tính:</strong>
+
+        Tổng điểm được hệ thống tự động tính từ các điểm đánh giá
+        của hồ sơ theo <strong>trọng số của từng tiêu chí</strong>.
+
+        Tổng điểm tối đa là <strong>100 điểm</strong>.
+
+    </div>
+
     <div class="card shadow-sm">
 
         <div class="card-body p-0">
@@ -78,11 +79,11 @@
 
                 <table class="table table-bordered table-hover align-middle mb-0">
 
-                    <thead class="table-dark">
+                    <thead class="table-primary">
 
                         <tr>
 
-                            <th style="width: 70px;">
+                            <th style="width: 60px;">
                                 STT
                             </th>
 
@@ -91,25 +92,26 @@
                             </th>
 
                             <th>
+                                Sinh viên
+                            </th>
+
+                            <th>
+                                Chương trình học bổng
+                            </th>
+
+                            <th style="width: 120px;">
                                 Tổng điểm
                             </th>
 
-                            <th>
+                            <th style="width: 110px;">
                                 Thứ hạng
                             </th>
 
-                            <th>
+                            <th style="width: 120px;">
                                 Kết quả
                             </th>
 
-                            <th>
-                                Ngày tạo
-                            </th>
-
-                            <th
-                                style="width: 240px;"
-                                class="text-center"
-                            >
+                            <th style="width: 210px;" class="text-center">
                                 Thao tác
                             </th>
 
@@ -123,10 +125,12 @@
 
                         <tr>
 
+                            {{-- STT --}}
                             <td>
                                 {{ $results->firstItem() + $loop->index }}
                             </td>
 
+                            {{-- Hồ sơ --}}
                             <td>
 
                                 @if($result->application)
@@ -145,24 +149,103 @@
 
                             </td>
 
+                            {{-- Sinh viên --}}
                             <td>
 
-                                <strong>
-                                    {{ number_format($result->total_score, 2) }}
-                                </strong>
+                                @if(
+                                    $result->application &&
+                                    $result->application->student
+                                )
+
+                                    {{ $result->application->student->full_name }}
+
+                                @else
+
+                                    <span class="text-muted">
+                                        Không xác định
+                                    </span>
+
+                                @endif
 
                             </td>
 
+                            {{-- Chương trình --}}
                             <td>
 
-                                <span class="badge bg-primary">
+                                @if(
+                                    $result->application &&
+                                    $result->application->scholarshipProgram
+                                )
 
-                                    Hạng {{ $result->ranking }}
+                                    {{ $result->application->scholarshipProgram->name }}
+
+                                @else
+
+                                    <span class="text-muted">
+                                        Không xác định
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            {{-- Tổng điểm --}}
+                            <td>
+
+                                <span class="badge bg-success fs-6">
+
+                                    {{ number_format((float) $result->total_score, 2) }}
 
                                 </span>
 
+                                <small class="text-muted">
+                                    / 100
+                                </small>
+
                             </td>
 
+                            {{-- Thứ hạng --}}
+                            <td>
+
+                                @if($result->ranking > 0)
+
+                                    @if($result->ranking == 1)
+
+                                        <span class="badge bg-warning text-dark">
+                                            🥇 Hạng 1
+                                        </span>
+
+                                    @elseif($result->ranking == 2)
+
+                                        <span class="badge bg-secondary">
+                                            🥈 Hạng 2
+                                        </span>
+
+                                    @elseif($result->ranking == 3)
+
+                                        <span class="badge bg-danger">
+                                            🥉 Hạng 3
+                                        </span>
+
+                                    @else
+
+                                        <span class="badge bg-primary">
+                                            Hạng {{ $result->ranking }}
+                                        </span>
+
+                                    @endif
+
+                                @else
+
+                                    <span class="text-muted">
+                                        Chưa xếp hạng
+                                    </span>
+
+                                @endif
+
+                            </td>
+
+                            {{-- Kết quả --}}
                             <td>
 
                                 @if($result->result === 'Qualified')
@@ -171,30 +254,23 @@
                                         Đạt
                                     </span>
 
-                                @else
+                                @elseif($result->result === 'Not Qualified')
 
                                     <span class="badge bg-danger">
                                         Không đạt
+                                    </span>
+
+                                @else
+
+                                    <span class="badge bg-secondary">
+                                        {{ $result->result }}
                                     </span>
 
                                 @endif
 
                             </td>
 
-                            <td>
-
-                                @if($result->created_at)
-
-                                    {{ $result->created_at->format('d/m/Y H:i') }}
-
-                                @else
-
-                                    -
-
-                                @endif
-
-                            </td>
-
+                            {{-- Thao tác --}}
                             <td>
 
                                 <div class="d-flex justify-content-center gap-1">
@@ -243,7 +319,7 @@
                         <tr>
 
                             <td
-                                colspan="7"
+                                colspan="8"
                                 class="text-center py-5"
                             >
 
@@ -252,14 +328,15 @@
                                 </h5>
 
                                 <p class="text-muted mb-3">
-                                    Hãy thêm kết quả xếp hạng đầu tiên.
+                                    Hãy chấm điểm hồ sơ trước,
+                                    sau đó tạo kết quả xếp hạng.
                                 </p>
 
                                 <a
                                     href="{{ route('ranking-results.create') }}"
                                     class="btn btn-primary"
                                 >
-                                    + Thêm kết quả
+                                    + Tạo kết quả xếp hạng
                                 </a>
 
                             </td>
@@ -278,6 +355,7 @@
 
     </div>
 
+    {{-- Phân trang --}}
     @if($results->hasPages())
 
         <div class="d-flex justify-content-center mt-4">
@@ -290,10 +368,4 @@
 
 </div>
 
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-></script>
-
-</body>
-
-</html>
+@endsection
